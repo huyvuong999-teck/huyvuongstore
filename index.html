@@ -1,0 +1,2365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HVuongStore — Bán Key Cheat Game</title>
+<style>
+  :root{
+    --bg:#0a0e1a;--bg2:#0f1526;--card:#141b2d;--card2:#1a2238;
+    --line:#232c45;--txt:#e8ecf5;--muted:#7a869e;
+    --cyan:#00d4ff;--green:#22c55e;--red:#ff4d5e;--gold:#fbbf24;--purple:#a855f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--txt);
+    min-height:100vh;overflow-x:hidden;padding-bottom:70px;
+  }
+  .bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .bg-orbs span{position:absolute;border-radius:50%;filter:blur(80px);opacity:.28;animation:floatOrb 24s ease-in-out infinite}
+  .bg-orbs span:nth-child(1){width:320px;height:320px;background:#ff2d55;top:-100px;left:-100px;animation-delay:0s}
+  .bg-orbs span:nth-child(2){width:420px;height:420px;background:#a855f7;top:25%;right:-160px;animation-delay:-6s}
+  .bg-orbs span:nth-child(3){width:360px;height:360px;background:#00d4ff;bottom:-140px;left:15%;animation-delay:-12s}
+  .bg-orbs span:nth-child(4){width:300px;height:300px;background:#fbbf24;bottom:5%;right:8%;animation-delay:-18s}
+  @keyframes floatOrb{
+    0%,100%{transform:translate(0,0) scale(1)}
+    25%{transform:translate(90px,-70px) scale(1.15)}
+    50%{transform:translate(-70px,90px) scale(.9)}
+    75%{transform:translate(70px,50px) scale(1.1)}
+  }
+  .wrap{max-width:900px;margin:0 auto;position:relative;z-index:1}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:linear-gradient(180deg,#0d6b8a,#0a4d66);font-size:12px;color:#cfeef9;position:relative;z-index:10}
+  .topbar .left{display:flex;align-items:center;gap:6px}
+  .topbar .right{display:flex;align-items:center;gap:10px}
+  .topbar .pill{background:rgba(255,255,255,.12);padding:3px 8px;border-radius:20px;font-weight:600;font-size:11px}
+
+  header{background:var(--bg2);border-bottom:1px solid var(--line);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+  header .menu-btn{width:36px;height:36px;border-radius:10px;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--txt);font-size:16px;cursor:pointer}
+  header .logo{flex:1;text-align:center}
+  header .logo .main{font-size:18px;font-weight:900;letter-spacing:1px;background:linear-gradient(90deg,#ff4d5e,#fbbf24,#00d4ff);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 0 30px rgba(0,212,255,.3);animation:logoShine 4s linear infinite}
+  @keyframes logoShine{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+  header .logo .sub{font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:3px;display:flex;align-items:center;justify-content:center;gap:8px}
+  header .logo .sub::before,header .logo .sub::after{content:"";height:1px;width:24px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+  header .search-btn{width:36px;height:36px;border-radius:10px;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--txt);font-size:16px;cursor:pointer}
+
+  .banner{margin:14px;background:linear-gradient(135deg,#0d1b2e,#0a1622);border:1px solid rgba(0,212,255,.35);border-radius:16px;padding:18px;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(0,212,255,.15),inset 0 0 30px rgba(0,212,255,.05)}
+  .banner::before{content:"";position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(0,212,255,.15),transparent);animation:rotate 8s linear infinite;pointer-events:none}
+  @keyframes rotate{to{transform:rotate(360deg)}}
+  .banner .badge-emblem{text-align:center;margin-bottom:10px;position:relative;z-index:1}
+  .banner .badge-emblem span{display:inline-block;font-size:9px;font-weight:800;letter-spacing:2px;padding:3px 10px;border-radius:4px;color:#fff;background:linear-gradient(135deg,#c8102e,#f5a623);box-shadow:0 0 20px rgba(245,166,35,.4)}
+  .banner h2{font-size:20px;font-weight:900;text-align:center;color:#fff;letter-spacing:1px;position:relative;z-index:1;text-shadow:0 0 20px rgba(0,212,255,.5)}
+  .banner .status{text-align:center;margin-top:10px;position:relative;z-index:1}
+  .banner .status span{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.5);color:#4ade80;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700}
+  .banner .status span::before{content:"";width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse 1.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+  .notice-box{margin-top:14px;background:rgba(0,0,0,.3);border:1px solid rgba(0,212,255,.2);border-left:3px solid var(--cyan);border-radius:12px;padding:14px;position:relative;z-index:1}
+  .notice-box h3{font-size:13px;font-weight:800;color:#00d4ff;display:flex;align-items:center;gap:6px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+  .notice-box p{font-size:12px;line-height:1.6;color:#b8c4da}
+  .notice-box p b{color:#4ade80}
+
+  .quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px;position:relative;z-index:1}
+  .quick .qcard{background:linear-gradient(135deg,#1abc5c 0%,#16a34a 50%,#0d7a37 100%);background-size:200% 200%;border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(34,197,94,.35),inset 0 1px 0 rgba(255,255,255,.15);cursor:pointer;position:relative;overflow:hidden;min-height:70px;transition:.2s;animation:gradShift 6s ease infinite}
+  @keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  .quick .qcard:active{transform:scale(.97)}
+  .quick .qcard .qicon{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .quick .qcard .qtext{flex:1;min-width:0}
+  .quick .qcard .qtitle{font-size:12px;font-weight:800;color:#fff;letter-spacing:.5px}
+  .quick .qcard .qsub{font-size:10px;color:rgba(255,255,255,.9);margin-top:2px}
+  .quick .qcard .arrow{position:absolute;right:10px;bottom:10px;font-size:14px;color:rgba(255,255,255,.85)}
+
+  .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px;position:relative;z-index:1}
+  .stat-card{background:linear-gradient(160deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+  .stat-card::before{content:"";position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(30px);opacity:.3}
+  .stat-card.blue::before{background:#00d4ff}
+  .stat-card.gold::before{background:#fbbf24}
+  .stat-card .sc-icon{font-size:24px;margin-bottom:6px;display:block}
+  .stat-card .sc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+  .stat-card .sc-value{font-size:24px;font-weight:900;color:#fff;margin-top:4px}
+  .stat-card .sc-value.blue{color:#00d4ff}
+  .stat-card .sc-value.gold{color:#fbbf24}
+  .stat-card .sc-sub{font-size:10px;color:var(--muted);margin-top:4px}
+
+  .rating-box{margin:14px;background:linear-gradient(160deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:18px;position:relative;z-index:1}
+  .rating-box .rb-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
+  .rating-box .rb-head .rb-score{font-size:44px;font-weight:900;color:#fbbf24;line-height:1;text-shadow:0 0 20px rgba(251,191,36,.5)}
+  .rating-box .rb-head .rb-info{flex:1}
+  .rating-box .rb-head .rb-stars{font-size:18px;color:#fbbf24;letter-spacing:2px;margin-bottom:4px}
+  .rating-box .rb-head .rb-count{font-size:11px;color:var(--muted)}
+  .rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px;color:var(--muted)}
+  .rating-bar-row .star-lbl{width:44px;flex-shrink:0;color:#fbbf24;font-weight:700;font-size:12px}
+  .rating-bar-row .star-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+  .rating-bar-row .star-fill{height:100%;background:linear-gradient(90deg,#fbbf24,#f59e0b);border-radius:4px;transition:width .5s;box-shadow:0 0 8px rgba(251,191,36,.5)}
+  .rating-bar-row .star-pct{width:42px;text-align:right;flex-shrink:0;color:#b8c4da;font-weight:700}
+  .rating-you{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted)}
+  .rating-you .rate-stars{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle}
+  .rating-you .rs{font-size:22px;cursor:pointer;color:#3a4055;transition:.15s;user-select:none}
+  .rating-you .rs.on{color:#fbbf24;text-shadow:0 0 10px rgba(251,191,36,.7)}
+  .rating-you .rs:hover{transform:scale(1.15)}
+
+  .zalo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 14px 14px;position:relative;z-index:1}
+  .zalo-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.2s;text-decoration:none;color:inherit}
+  .zalo-card:hover{border-color:rgba(0,212,255,.6);background:rgba(0,212,255,.04);transform:translateY(-2px)}
+  .zalo-card .zic{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#0066ff);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+  .zalo-card .zinfo{flex:1;min-width:0}
+  .zalo-card .zname{font-size:11px;font-weight:700;color:#fff}
+  .zalo-card .zsub{font-size:9px;color:#00d4ff;margin-top:1px;font-weight:600}
+  .zalo-card.new{background:linear-gradient(135deg,#1a2238,#0f1526);position:relative}
+  .zalo-card.new::after{content:"MỚI";position:absolute;top:-1px;right:8px;background:#ff4d5e;color:#fff;font-size:8px;font-weight:800;padding:2px 8px;border-radius:0 0 6px 6px;letter-spacing:1px}
+  .zalo-footer{margin:0 14px 14px;text-align:center;font-size:11px;color:var(--muted);padding:10px;background:rgba(0,212,255,.05);border-radius:10px;border:1px dashed rgba(0,212,255,.3);position:relative;z-index:1}
+
+  .cats{display:flex;gap:8px;padding:0 14px 14px;overflow-x:auto;scrollbar-width:none;position:relative;z-index:1}
+  .cats::-webkit-scrollbar{display:none}
+  .cat{flex-shrink:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;color:#b8c4da;cursor:pointer;white-space:nowrap;transition:.2s;display:flex;align-items:center;gap:6px}
+  .cat.active{background:linear-gradient(135deg,#00d4ff,#0088cc);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(0,212,255,.35)}
+  .cat .cicon{font-size:13px}
+
+  .sec-head{display:flex;align-items:center;justify-content:space-between;padding:0 14px;margin-bottom:12px;position:relative;z-index:1}
+  .sec-head h2{font-size:18px;font-weight:900;color:#fff;display:flex;align-items:center;gap:8px}
+  .sec-head h2::before{content:"🔥";font-size:18px}
+  .sec-head h2.no-icon::before{content:none}
+  .sec-head .view-all{font-size:11px;font-weight:700;color:#00d4ff;text-decoration:none;padding:6px 12px;background:rgba(0,212,255,.1);border-radius:8px;border:1px solid rgba(0,212,255,.3);cursor:pointer}
+  .sec-head-wrap{padding:0 14px 12px;position:relative;z-index:1}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 20px;position:relative;z-index:1}
+  @media(min-width:640px){.grid{grid-template-columns:1fr 1fr 1fr}}
+  .product{background:linear-gradient(160deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:.2s;display:flex;flex-direction:column;position:relative}
+  .product.out-of-stock{opacity:.5}
+  .product:hover{transform:translateY(-3px);border-color:rgba(0,212,255,.5);box-shadow:0 8px 24px rgba(0,212,255,.15)}
+  .product.roblox-card:hover{border-color:rgba(74,222,128,.5);box-shadow:0 8px 24px rgba(74,222,128,.15)}
+  .product .thumb{height:100px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;font-size:11px;font-weight:900;color:#fff;text-align:center;padding:8px;letter-spacing:1px;line-height:1.3}
+  .product .thumb.purple{background:radial-gradient(circle at 30% 30%,#7c3aed,#3b0764)}
+  .product .thumb.blue{background:radial-gradient(circle at 30% 30%,#2563eb,#0c1e4a)}
+  .product .thumb.red{background:radial-gradient(circle at 30% 30%,#dc2626,#450a0a)}
+  .product .thumb.dark{background:radial-gradient(circle at 30% 30%,#334155,#0f172a)}
+  .product .thumb.green{background:radial-gradient(circle at 30% 30%,#16a34a,#052e16)}
+  .product .thumb .badge{position:absolute;top:6px;left:6px;background:rgba(255,77,94,.95);color:#fff;font-size:8px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:.5px}
+  .product .thumb .stock-tag{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:#4ade80;font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;border:1px solid rgba(74,222,128,.5);backdrop-filter:blur(4px);animation:tagPulse 2s ease-in-out infinite}
+  .product .thumb .stock-tag.low{color:#fbbf24;border-color:rgba(251,191,36,.5)}
+  .product .thumb .stock-tag.out{color:#ff4d5e;border-color:rgba(255,77,94,.5);animation:none}
+  @keyframes tagPulse{0%,100%{box-shadow:0 0 0 rgba(74,222,128,0)}50%{box-shadow:0 0 12px rgba(74,222,128,.5)}}
+  .product .body{padding:10px;flex:1;display:flex;flex-direction:column;gap:6px}
+  .product .pname{font-size:12px;font-weight:800;color:#fff;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
+  .product .price{font-size:13px;font-weight:900;background:linear-gradient(90deg,#ff4d5e,#fbbf24,#ff4d5e);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:priceShimmer 3s linear infinite}
+  @keyframes priceShimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+  .product .meta{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted);flex-wrap:wrap;margin-top:auto}
+  .product .star{color:#fbbf24;font-weight:700}
+  .product .sold{color:#7a869e}
+  .product .ship{color:#4ade80;font-weight:700;display:flex;align-items:center;gap:3px}
+  .product .ship::before{content:"⚡";font-size:10px}
+  .product .ship.out{color:#ff4d5e}
+  .product .ship.out::before{content:"⚠";font-size:10px}
+
+  .load-more{margin:0 14px 20px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;text-align:center;font-size:13px;font-weight:700;color:#b8c4da;cursor:pointer;transition:.2s;position:relative;z-index:1}
+  .load-more:hover{background:var(--card2);border-color:rgba(0,212,255,.4)}
+  .load-more.roblox-load{border-color:rgba(74,222,128,.4);color:#4ade80}
+  .load-more.roblox-load:hover{background:rgba(34,197,94,.08);border-color:rgba(74,222,128,.7)}
+
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 10px;backdrop-filter:blur(12px)}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:8.5px;font-weight:700;cursor:pointer;transition:.2s;padding:4px 2px;text-decoration:none;letter-spacing:.3px;position:relative}
+  .nav-item .ni{font-size:17px;line-height:1;transition:.2s}
+  .nav-item.active{color:#00d4ff}
+  .nav-item.active .ni{filter:drop-shadow(0 0 8px rgba(0,212,255,.6));transform:scale(1.1)}
+  .nav-item.roblox-nav{color:#4ade80}
+  .nav-item.roblox-nav.active{color:#4ade80}
+  .nav-item.roblox-nav.active .ni{filter:drop-shadow(0 0 8px rgba(74,222,128,.6))}
+  .nav-item.admin-nav{color:#fbbf24}
+  .nav-item.admin-nav.active{color:#fbbf24}
+  .nav-item .badge-dot{position:absolute;top:2px;right:calc(50% - 18px);background:#ff4d5e;color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg2);animation:badgePulse 1.2s ease-in-out infinite}
+  @keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+  .page{display:none}
+  .page.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .form-card{margin:14px;background:linear-gradient(160deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;z-index:1}
+  .form-card h2{font-size:22px;font-weight:900;text-align:center;color:#fff;margin-bottom:6px}
+  .form-card .sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:20px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+  .field input,.field textarea{width:100%;padding:13px 14px;background:#0a1020;border:1px solid var(--line);border-radius:10px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:.2s}
+  .field textarea{resize:vertical;min-height:80px;font-family:'Courier New',monospace;font-size:12px}
+  .field input:focus,.field textarea:focus{border-color:#00d4ff;box-shadow:0 0 0 3px rgba(0,212,255,.15)}
+  .field input::placeholder,.field textarea::placeholder{color:#4a5570}
+  .btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,#1a4d8f,#0a2a5c);background-size:200% 200%;border:0;border-radius:10px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:.2s;box-shadow:0 4px 20px rgba(26,77,143,.4);animation:gradShift 6s ease infinite}
+  .btn-primary:hover{filter:brightness(1.15);transform:translateY(-1px)}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;filter:none}
+  .form-footer{text-align:center;font-size:12px;color:var(--muted);margin-top:16px}
+  .form-footer a{color:#00d4ff;font-weight:700;text-decoration:none;cursor:pointer}
+  .form-footer a:hover{text-decoration:underline}
+
+  .balance-box{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.3);border-radius:10px;padding:16px;margin:0 0 16px;text-align:center}
+  .balance-box .blabel{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .balance-box .bval{font-size:28px;font-weight:900;color:#4ade80}
+
+  .amount-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+  .amount-quick button{padding:10px;background:var(--card2);border:1px solid var(--line);border-radius:8px;color:#b8c4da;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s}
+  .amount-quick button:hover{border-color:#00d4ff;color:#00d4ff;transform:translateY(-2px)}
+
+  .qr-wrap{text-align:center;margin:16px auto;padding:20px;background:#fff;border-radius:14px;max-width:300px}
+  .qr-wrap img,.qr-wrap svg{max-width:100%;display:block;border-radius:8px;margin:0 auto}
+  .qr-wrap .qr-note{color:#333;font-size:11px;font-weight:700;margin-top:10px;text-align:center}
+  .qr-wrap .qr-amount{color:#0a4d66;font-size:15px;font-weight:900;margin-top:6px;text-align:center}
+  .qr-loading{padding:40px 20px;text-align:center;color:#666;font-size:13px}
+  .qr-loading::before{content:"⏳";display:block;font-size:34px;margin-bottom:8px;animation:pulse 1.5s infinite}
+  .qr-error{padding:20px;text-align:center;color:#c00;font-size:12px}
+
+  .bank-info{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px}
+  .bank-info .brow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .bank-info .brow:last-child{border-bottom:0}
+  .bank-info .brow span{color:var(--muted)}
+  .bank-info .brow b{color:#fff;font-weight:700}
+  .bank-info .brow b.acc{color:#fbbf24;font-size:15px;letter-spacing:1px}
+
+  .pay-header{background:linear-gradient(135deg,#0ea5e9,#0284c7);background-size:200% 200%;padding:30px 20px;border-radius:0 0 24px 24px;text-align:center;color:#fff;margin-bottom:16px;position:relative;z-index:1;animation:gradShift 8s ease infinite}
+  .pay-header .ic{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px}
+  .pay-header h2{font-size:22px;font-weight:900}
+  .pay-header p{font-size:12px;opacity:.9;margin-top:4px}
+
+  .empty{text-align:center;padding:60px 30px;color:var(--muted);position:relative;z-index:1}
+  .empty .ic{font-size:60px;margin-bottom:14px;opacity:.5}
+  .empty h3{font-size:16px;font-weight:800;color:#b8c4da;margin-bottom:6px}
+  .empty p{font-size:12px;line-height:1.6}
+
+  .drawer{position:fixed;top:0;left:0;bottom:0;width:280px;max-width:85vw;background:linear-gradient(180deg,#0f1526,#0a0e1a);z-index:200;transform:translateX(-100%);transition:.3s cubic-bezier(.4,0,.2,1);border-right:1px solid var(--line);overflow-y:auto}
+  .drawer.open{transform:translateX(0)}
+  .drawer-mask{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:199;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(4px)}
+  .drawer-mask.open{opacity:1;pointer-events:auto}
+  .drawer-head{padding:20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+  .drawer-head .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .drawer-head .dinfo{flex:1}
+  .drawer-head .dname{font-size:14px;font-weight:800;color:#fff}
+  .drawer-head .dsub{font-size:11px;color:var(--muted);margin-top:2px}
+  .drawer-list{padding:10px 0}
+  .drawer-item{display:flex;align-items:center;gap:12px;padding:14px 20px;color:#b8c4da;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+  .drawer-item:hover{background:rgba(0,212,255,.08);color:#00d4ff;padding-left:24px}
+  .drawer-item .dic{font-size:18px;width:24px;text-align:center}
+  .drawer-item.roblox{color:#4ade80}
+  .drawer-item.roblox:hover{background:rgba(34,197,94,.08);color:#4ade80}
+  .drawer-item.admin{color:#fbbf24}
+  .drawer-item.admin:hover{background:rgba(251,191,36,.08);color:#fbbf24}
+
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:12px 22px;border-radius:30px;font-size:13px;font-weight:700;z-index:300;opacity:0;transition:.3s;box-shadow:0 8px 30px rgba(34,197,94,.5);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{background:linear-gradient(135deg,#dc2626,#7f1d1d);box-shadow:0 8px 30px rgba(220,38,38,.5)}
+
+  .admin-row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+  .admin-row .arow{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;gap:10px}
+  .admin-row .arow span{color:var(--muted);flex-shrink:0}
+  .admin-row .arow b{color:#fff;text-align:right;word-break:break-all}
+  .admin-row .arow b.amount{color:#fbbf24;font-size:15px}
+  .admin-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .admin-actions button{flex:1;min-width:80px;padding:10px;border:0;border-radius:8px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:.2s}
+  .admin-actions button:hover{transform:translateY(-1px);filter:brightness(1.15)}
+  .admin-actions .approve{background:linear-gradient(135deg,#16a34a,#15803d)}
+  .admin-actions .reject{background:linear-gradient(135deg,#dc2626,#7f1d1d)}
+  .admin-actions .edit{background:linear-gradient(135deg,#0891b2,#0369a1)}
+  .admin-actions .del{background:linear-gradient(135deg,#dc2626,#7f1d1d)}
+  .admin-actions .key{background:linear-gradient(135deg,#f59e0b,#b45309)}
+
+  .prod-edit-form{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);display:none}
+  .prod-edit-form.open{display:block}
+  .prod-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+  .key-display{margin-top:10px;padding:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.4);border-radius:10px;font-family:'Courier New',monospace;font-size:14px;font-weight:900;color:#4ade80;word-break:break-all;text-align:center;letter-spacing:1px;cursor:pointer;transition:.2s;box-shadow:0 0 20px rgba(34,197,94,.15) inset}
+  .key-display:hover{background:rgba(34,197,94,.15)}
+  .key-display::after{content:"📋 Tap để copy";display:block;font-size:10px;color:var(--muted);margin-top:6px;font-family:inherit;font-weight:600;letter-spacing:0}
+
+  .pending-key{margin-top:10px;padding:12px;background:rgba(251,191,36,.08);border:1px dashed rgba(251,191,36,.5);border-radius:10px;text-align:center;font-size:12px;color:#fbbf24;font-weight:700}
+
+  /* TIER MODAL */
+  .tier-modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+  .tier-modal-mask.show{display:flex;animation:fadeIn .2s ease}
+  .tier-modal{background:linear-gradient(160deg,#1a1f33,#0f1526);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:popIn .3s cubic-bezier(.34,1.56,.64,1);position:relative}
+  .tier-modal .tm-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);position:relative}
+  .tier-modal .tm-head .tm-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;flex-shrink:0}
+  .tier-modal .tm-head .tm-icon.purple{background:radial-gradient(circle at 30% 30%,#7c3aed,#3b0764)}
+  .tier-modal .tm-head .tm-icon.blue{background:radial-gradient(circle at 30% 30%,#2563eb,#0c1e4a)}
+  .tier-modal .tm-head .tm-icon.red{background:radial-gradient(circle at 30% 30%,#dc2626,#450a0a)}
+  .tier-modal .tm-head .tm-icon.dark{background:radial-gradient(circle at 30% 30%,#334155,#0f172a)}
+  .tier-modal .tm-head .tm-icon.green{background:radial-gradient(circle at 30% 30%,#16a34a,#052e16)}
+  .tier-modal .tm-info{flex:1;min-width:0}
+  .tier-modal .tm-title{font-size:16px;font-weight:900;color:#fff;line-height:1.2}
+  .tier-modal .tm-sub{font-size:11px;color:var(--muted);margin-top:3px}
+  .tier-modal .tm-close{position:absolute;top:-8px;right:-8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);border:0;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+  .tier-modal .tm-close:hover{color:#fff;background:rgba(255,255,255,.15)}
+  .tier-list{display:flex;flex-direction:column;gap:8px}
+  .tier-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;transition:.2s;cursor:pointer}
+  .tier-item:hover{border-color:rgba(0,212,255,.55);background:var(--card2);transform:translateX(3px)}
+  .tier-item.disabled{opacity:.45;cursor:not-allowed}
+  .tier-item.disabled:hover{border-color:var(--line);transform:none}
+  .tier-item .ti-left{flex:1;min-width:0}
+  .tier-item .ti-label{font-size:14px;font-weight:800;color:#fff}
+  .tier-item .ti-price{font-size:12px;color:var(--gold);font-weight:900;margin-top:3px}
+  .tier-item .ti-stock{font-size:10px;color:var(--muted);margin-top:2px}
+  .tier-item .ti-btn{padding:9px 16px;border:0;border-radius:8px;background:linear-gradient(135deg,#ff4d5e,#c2185b);color:#fff;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+  .tier-item.disabled .ti-btn{background:var(--line);color:var(--muted);cursor:not-allowed}
+  .tier-item .ti-btn:hover:not(:disabled){filter:brightness(1.15)}
+
+  /* KEY POPUP */
+  .key-popup-mask{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+  .key-popup-mask.show{display:flex;animation:fadeIn .25s ease}
+  .key-popup{background:linear-gradient(160deg,#0f1e14,#0a1510);border:1px solid rgba(34,197,94,.5);border-radius:22px;padding:28px 24px;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(34,197,94,.35),0 0 60px rgba(34,197,94,.2);animation:popIn .4s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+  .key-popup::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#16a34a,#4ade80,#16a34a);background-size:200% 100%;animation:gradShift 3s linear infinite}
+  .key-popup .kp-icon{font-size:60px;margin-bottom:10px;display:block;animation:annBell 2s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(74,222,128,.7))}
+  .key-popup .kp-title{font-size:18px;font-weight:900;color:#4ade80;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;text-shadow:0 0 20px rgba(74,222,128,.5)}
+  .key-popup .kp-prod{font-size:14px;color:#fff;font-weight:800;margin-bottom:4px}
+  .key-popup .kp-tier{font-size:11px;color:#7a869e;margin-bottom:16px}
+  .key-popup .kp-key{margin:14px 0;padding:16px;background:rgba(0,0,0,.4);border:1px dashed rgba(74,222,128,.6);border-radius:12px;font-family:'Courier New',monospace;font-size:15px;font-weight:900;color:#4ade80;word-break:break-all;letter-spacing:1px;cursor:pointer;transition:.2s;box-shadow:0 0 24px rgba(74,222,128,.2) inset}
+  .key-popup .kp-key:hover{background:rgba(34,197,94,.15)}
+  .key-popup .kp-key::after{content:"📋 Tap để copy";display:block;font-size:10px;color:var(--muted);margin-top:8px;font-family:inherit;font-weight:600;letter-spacing:0}
+  .key-popup .kp-note{font-size:12px;color:#b8c4da;line-height:1.6;margin-bottom:16px;padding:10px;background:rgba(0,0,0,.25);border-radius:8px}
+  .key-popup .kp-btn{padding:12px 40px;border:0;border-radius:999px;background:linear-gradient(135deg,#16a34a,#4ade80);color:#0a1510;font-weight:900;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 8px 30px rgba(34,197,94,.5);transition:.2s;letter-spacing:.5px}
+  .key-popup .kp-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+
+  /* ANNOUNCEMENT POPUP */
+  .ann-popup-mask{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+  .ann-popup-mask.show{display:flex;animation:fadeIn .25s ease}
+  .ann-popup{background:linear-gradient(160deg,#1a1f33,#0f1526);border:1px solid rgba(251,191,36,.45);border-radius:22px;padding:28px 24px;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(255,77,94,.35),0 0 0 1px rgba(251,191,36,.15) inset,0 0 60px rgba(251,191,36,.15);animation:popIn .4s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+  .ann-popup::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ff4d5e,#fbbf24,#00d4ff);background-size:200% 100%;animation:gradShift 3s linear infinite}
+  .ann-popup .ann-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.05);border:0;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:6px 10px;border-radius:8px;transition:.2s}
+  .ann-popup .ann-close:hover{color:#fff;background:rgba(255,255,255,.12)}
+  .ann-popup .ann-icon{font-size:64px;margin-bottom:10px;display:block;animation:annBell 2s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(251,191,36,.7))}
+  @keyframes annBell{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.08)}}
+  .ann-popup .ann-title{font-size:20px;font-weight:900;color:#fbbf24;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;text-shadow:0 0 20px rgba(251,191,36,.5)}
+  .ann-popup .ann-text{font-size:14px;line-height:1.65;color:#fff;white-space:pre-wrap;word-break:break-word;padding:14px;background:rgba(0,0,0,.3);border-radius:12px;border-left:3px solid #fbbf24;text-align:left;margin-bottom:12px;max-height:240px;overflow-y:auto}
+  .ann-popup .ann-time{font-size:11px;color:var(--muted);margin-bottom:18px}
+  .ann-popup .ann-btn{padding:12px 40px;border:0;border-radius:999px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#0a0e1a;font-weight:900;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 8px 30px rgba(251,191,36,.5);transition:.2s;letter-spacing:.5px}
+  .ann-popup .ann-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .chat-fab{position:fixed;bottom:85px;right:16px;z-index:150;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#0284c7);background-size:200% 200%;color:#fff;font-size:26px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 30px rgba(0,212,255,.5),0 0 0 1px rgba(255,255,255,.15) inset;transition:.2s;border:0;animation:floatBtn 3s ease-in-out infinite,gradShift 6s ease infinite}
+  .chat-fab.show{display:flex}
+  .chat-fab:hover{transform:scale(1.08)}
+  .chat-fab .chat-badge{position:absolute;top:-4px;right:-4px;background:#ff4d5e;color:#fff;font-size:10px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:none;align-items:center;justify-content:center;padding:0 5px;border:2px solid var(--bg2);animation:badgePulse 1.2s ease-in-out infinite}
+  .chat-fab .chat-badge.show{display:flex}
+  @keyframes floatBtn{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+  .chat-panel{position:fixed;bottom:150px;right:16px;z-index:151;width:min(360px,calc(100vw - 32px));height:min(500px,60vh);background:linear-gradient(160deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.6);display:none;flex-direction:column;overflow:hidden;animation:popIn .25s cubic-bezier(.34,1.56,.64,1)}
+  .chat-panel.open{display:flex}
+  .chat-panel .cp-head{padding:14px 16px;background:linear-gradient(135deg,#0284c7,#075985);color:#fff;display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .chat-panel .cp-head .cp-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#0066ff);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .chat-panel .cp-head .cp-info{flex:1}
+  .chat-panel .cp-head .cp-title{font-size:14px;font-weight:800}
+  .chat-panel .cp-head .cp-status{font-size:10px;opacity:.85;margin-top:2px}
+  .chat-panel .cp-head .cp-close{background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1}
+  .chat-panel .cp-head .cp-close:hover{background:rgba(255,255,255,.15)}
+  .chat-panel .cp-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:rgba(0,0,0,.15)}
+  .chat-msg{max-width:80%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.45;word-wrap:break-word;animation:msgIn .25s ease}
+  .chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;border-bottom-right-radius:4px}
+  .chat-msg.admin{align-self:flex-start;background:var(--card2);color:#e8ecf5;border:1px solid var(--line);border-bottom-left-radius:4px}
+  .chat-msg.system{align-self:center;font-size:11px;color:var(--muted);background:transparent;padding:4px;max-width:100%;text-align:center}
+  .chat-msg .cm-time{display:block;font-size:9px;opacity:.6;margin-top:4px}
+  @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .chat-panel .cp-input{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--card);flex-shrink:0}
+  .chat-panel .cp-input input{flex:1;padding:11px 14px;background:#0a1020;border:1px solid var(--line);border-radius:10px;color:#fff;font-size:13px;font-family:inherit;outline:none}
+  .chat-panel .cp-input input:focus{border-color:#00d4ff}
+  .chat-panel .cp-input button{padding:0 18px;border:0;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#0284c7);color:#fff;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit}
+
+  .music-toggle{position:fixed;bottom:85px;left:16px;z-index:150;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;font-size:20px;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(168,85,247,.5);transition:.2s}
+  .music-toggle:hover{transform:scale(1.1)}
+  .music-toggle.muted{background:linear-gradient(135deg,#4a5570,#2a3245);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+
+  .admin-chat-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:12px}
+  .admin-chat-item:hover{border-color:rgba(0,212,255,.5);background:var(--card2);transform:translateX(3px)}
+  .admin-chat-item .aci-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#00d4ff);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+  .admin-chat-item .aci-info{flex:1;min-width:0}
+  .admin-chat-item .aci-name{font-size:13px;font-weight:800;color:#fff;display:flex;align-items:center;gap:6px}
+  .admin-chat-item .aci-name .unread-tag{background:#ff4d5e;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px}
+  .admin-chat-item .aci-preview{font-size:11px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .admin-chat-item .aci-time{font-size:10px;color:var(--muted);flex-shrink:0}
+
+  .admin-chat-view{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+  .admin-chat-view .acv-head{padding-bottom:10px;margin-bottom:12px;border-bottom:1px dashed var(--line);display:flex;align-items:center;gap:10px}
+  .admin-chat-view .acv-head .acv-name{font-size:14px;font-weight:800;color:#fff;flex:1}
+  .admin-chat-view .acv-body{max-height:300px;overflow-y:auto;padding:8px;background:rgba(0,0,0,.15);border-radius:10px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .admin-chat-view .acv-input{display:flex;gap:8px}
+  .admin-chat-view .acv-input input{flex:1;padding:11px 14px;background:#0a1020;border:1px solid var(--line);border-radius:10px;color:#fff;font-size:13px;font-family:inherit;outline:none}
+  .admin-chat-view .acv-input input:focus{border-color:#00d4ff}
+  .admin-chat-view .acv-input button{padding:0 18px;border:0;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#0284c7);color:#fff;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit}
+
+  /* ADMIN TIER EDITOR */
+  .tier-editor{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;position:relative}
+  .tier-editor .te-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .tier-editor .te-title{font-size:11px;font-weight:800;color:#fbbf24;letter-spacing:1px;text-transform:uppercase}
+  .tier-editor .te-del{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.4);color:#ff8080;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:800;cursor:pointer;font-family:inherit}
+  .tier-editor .te-del:hover{background:rgba(220,38,38,.3);color:#fff}
+  .tier-editor .te-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+  .tier-editor .te-grid input,.tier-editor textarea{width:100%;padding:8px 10px;background:#0a1020;border:1px solid var(--line);border-radius:6px;color:#fff;font-size:12px;font-family:inherit;outline:none}
+  .tier-editor .te-grid input:focus,.tier-editor textarea:focus{border-color:#00d4ff}
+  .tier-editor textarea{font-family:'Courier New',monospace;font-size:11px;min-height:60px;resize:vertical}
+  .tier-editor .te-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:3px;display:block}
+  #addTierBtn{background:linear-gradient(135deg,#0891b2,#0369a1);margin-bottom:12px}
+
+  /* ROBLOX ORDER MODAL */
+  .roblox-modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);z-index:550;display:none;align-items:center;justify-content:center;padding:20px}
+  .roblox-modal-mask.show{display:flex;animation:fadeIn .2s ease}
+  .roblox-modal{background:linear-gradient(160deg,#1a2233,#0f1526);border:1px solid rgba(34,197,94,.4);border-radius:20px;padding:22px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(34,197,94,.3);animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
+  .roblox-modal .rm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .roblox-modal .rm-title{font-size:16px;font-weight:900;color:#4ade80;letter-spacing:.5px}
+  .roblox-modal .rm-close{background:rgba(255,255,255,.08);border:0;color:var(--muted);font-size:16px;cursor:pointer;width:28px;height:28px;border-radius:50%;line-height:1}
+  .roblox-modal .rm-close:hover{color:#fff;background:rgba(255,255,255,.15)}
+  .roblox-modal .rm-prod{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px}
+  .roblox-modal .rm-tier{font-size:12px;color:#b8c4da;margin-bottom:6px;line-height:1.4}
+  .roblox-modal .rm-price{font-size:14px;font-weight:900;color:#fbbf24;margin-bottom:16px;padding:10px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);border-radius:8px;text-align:center}
+  .roblox-modal .rm-note{font-size:11px;color:#fbbf24;background:rgba(251,191,36,.08);border-left:3px solid #fbbf24;padding:10px;border-radius:6px;margin:14px 0;line-height:1.5}
+
+  /* ROBLOX FEATURED SECTION */
+  .roblox-feature{margin:0 14px 20px;background:linear-gradient(135deg,#0d1f14,#0a1622);border:1px solid rgba(34,197,94,.45);border-radius:16px;padding:18px;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(34,197,94,.15),inset 0 0 30px rgba(34,197,94,.05)}
+  .roblox-feature::before{content:"";position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(34,197,94,.15),transparent);animation:rotate 8s linear infinite;pointer-events:none}
+  .roblox-feature .rf-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;position:relative;z-index:1}
+  .roblox-feature .rf-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#16a34a,#0d7a37);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 16px rgba(34,197,94,.4);flex-shrink:0}
+  .roblox-feature .rf-title{flex:1}
+  .roblox-feature .rf-title h3{font-size:16px;font-weight:900;color:#4ade80;letter-spacing:1px}
+  .roblox-feature .rf-title p{font-size:11px;color:#b8c4da;margin-top:2px}
+  .roblox-feature .rf-btn{position:relative;z-index:1;margin-top:14px;display:block;width:100%;padding:14px;background:linear-gradient(135deg,#16a34a,#0d7a37);background-size:200% 200%;border:0;border-radius:12px;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:.2s;box-shadow:0 6px 24px rgba(34,197,94,.45);animation:gradShift 6s ease infinite}
+  .roblox-feature .rf-btn:hover{transform:translateY(-2px);filter:brightness(1.15)}
+  .roblox-feature .rf-chips{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+  .roblox-feature .rf-chip{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);color:#4ade80;font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px}
+
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs"><span></span><span></span><span></span><span></span></div>
+
+<audio id="bgMusic" loop preload="auto" style="display:none">
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3" type="audio/mpeg">
+</audio>
+
+<div class="topbar">
+  <div class="left"><span>🌐 Vietnamese</span><span class="pill">VND ▾</span></div>
+  <div class="right"><span style="font-size:13px">🌙</span><span style="font-size:13px">🛒</span></div>
+</div>
+
+<header>
+  <div class="menu-btn" onclick="openDrawer()">☰</div>
+  <div class="logo">
+    <div class="main">HVUONGSTORE.XYZ</div>
+    <div class="sub">TỰ ĐỘNG • BẢO MẬT • HỖ TRỢ 24/7</div>
+  </div>
+  <div class="search-btn">🔍</div>
+</header>
+
+<div class="drawer-mask" id="mask" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="avatar" id="drawerAvatar">👤</div>
+    <div class="dinfo">
+      <div class="dname" id="drawerName">Khách</div>
+      <div class="dsub" id="drawerSub">Chưa đăng nhập</div>
+    </div>
+  </div>
+  <div class="drawer-list">
+    <div class="drawer-item" onclick="go('home');closeDrawer()"><span class="dic">🏠</span> Trang chủ</div>
+    <div class="drawer-item" onclick="go('products');closeDrawer()"><span class="dic">📦</span> Sản phẩm</div>
+    <div class="drawer-item roblox" onclick="go('roblox');closeDrawer()"><span class="dic">🎮</span> Treo Game Roblox</div>
+    <div class="drawer-item" onclick="go('keys');closeDrawer()"><span class="dic">🔑</span> Kho Key</div>
+    <div class="drawer-item" onclick="go('topup');closeDrawer()"><span class="dic">💳</span> Nạp tiền</div>
+    <div class="drawer-item" onclick="go('orders');closeDrawer()"><span class="dic">🧾</span> Đơn hàng</div>
+    <div class="drawer-item" onclick="go('info');closeDrawer()"><span class="dic">👤</span> Thông tin</div>
+    <div class="drawer-item" onclick="window.open('https://zalo.me/g/rzyu2nxyanfryqckuwbm','_blank')"><span class="dic">💬</span> Hỗ trợ Zalo</div>
+    <div class="drawer-item admin" id="adminDrawerItem" style="display:none" onclick="go('admin');closeDrawer()"><span class="dic">🔐</span> Admin Panel</div>
+  </div>
+</div>
+
+<div class="ann-popup-mask" id="annPopupMask">
+  <div class="ann-popup">
+    <button class="ann-close" onclick="closeAnnPopup()">✕</button>
+    <div class="ann-icon">📢</div>
+    <div class="ann-title">Thông báo từ Admin</div>
+    <div class="ann-text" id="annPopupText"></div>
+    <div class="ann-time" id="annPopupTime"></div>
+    <button class="ann-btn" onclick="closeAnnPopup()">Đã hiểu</button>
+  </div>
+</div>
+
+<div class="tier-modal-mask" id="tierModalMask" onclick="closeTierModal(event)">
+  <div class="tier-modal" onclick="event.stopPropagation()">
+    <div class="tm-head">
+      <div class="tm-icon" id="tmIcon">?</div>
+      <div class="tm-info">
+        <div class="tm-title" id="tmTitle">—</div>
+        <div class="tm-sub" id="tmSub">—</div>
+      </div>
+      <button class="tm-close" onclick="closeTierModal()">✕</button>
+    </div>
+    <div class="tier-list" id="tierList"></div>
+  </div>
+</div>
+
+<div class="key-popup-mask" id="keyPopupMask">
+  <div class="key-popup">
+    <span class="kp-icon">🔑</span>
+    <div class="kp-title">Key của bạn đây!</div>
+    <div class="kp-prod" id="kpProd">—</div>
+    <div class="kp-tier" id="kpTier">—</div>
+    <div class="kp-key" id="kpKey" onclick="copyKey(this.textContent.trim())">—</div>
+    <div class="kp-note" id="kpNote">Nhấn vào key để sao chép. Lưu lại cẩn thận nhé!</div>
+    <button class="kp-btn" onclick="closeKeyPopup()">Đã hiểu</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="page active" id="page-home">
+    <div class="banner">
+      <div class="badge-emblem"><span>HVUONGSTORE OFFICIAL</span></div>
+      <h2>HVUONGSTORE.XYZ</h2>
+      <div class="status"><span>HỆ THỐNG ONLINE 100% ỔN ĐỊNH</span></div>
+      <div class="notice-box">
+        <h3>🛡️ THÔNG BÁO TÌNH TRẠNG LEO RANK</h3>
+        <p>Tất cả các bản hack trên hệ thống đều đã kích hoạt <b>cơ chế Anti-Ban thế hệ mới</b>, vận hành cực kỳ an toàn, anh em yên tâm kéo rank thỏa thích!</p>
+      </div>
+      <div class="quick" style="margin:14px 0 0">
+        <div class="qcard" onclick="go('topup')">
+          <div class="qicon">🔔</div>
+          <div class="qtext"><div class="qtitle">NẠP TIỀN</div><div class="qsub">VÀO NGAY</div></div>
+          <div class="arrow">↗</div>
+        </div>
+        <div class="qcard" onclick="window.open('https://zalo.me/g/rzyu2nxyanfryqckuwbm','_blank')">
+          <div class="qicon">📢</div>
+          <div class="qtext"><div class="qtitle">NHÓM ZALO</div><div class="qsub">VÀO NGAY</div></div>
+          <div class="arrow">↗</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;text-align:center;font-size:11px;color:#4ade80;font-weight:700">
+        💬 Nhận tin cập nhật & thông báo fix lỗi sớm nhất
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card blue">
+        <span class="sc-icon">👥</span>
+        <div class="sc-label">Người dùng tháng này</div>
+        <div class="sc-value blue" id="monthUsers">0</div>
+        <div class="sc-sub" id="monthUsersSub">Đăng ký trong tháng</div>
+      </div>
+      <div class="stat-card gold">
+        <span class="sc-icon">⭐</span>
+        <div class="sc-label">Đánh giá trung bình</div>
+        <div class="sc-value gold" id="avgRating">0.0</div>
+        <div class="sc-sub" id="totalRatings">0 lượt đánh giá</div>
+      </div>
+    </div>
+
+    <div class="rating-box">
+      <div class="rb-head">
+        <div class="rb-score" id="rbScore">0.0</div>
+        <div class="rb-info">
+          <div class="rb-stars" id="rbStars">☆☆☆☆☆</div>
+          <div class="rb-count" id="rbCount">Chưa có đánh giá nào</div>
+        </div>
+      </div>
+      <div id="ratingBars">
+        <div class="rating-bar-row"><div class="star-lbl">5 ★</div><div class="star-track"><div class="star-fill" style="width:0%"></div></div><div class="star-pct">0%</div></div>
+        <div class="rating-bar-row"><div class="star-lbl">4 ★</div><div class="star-track"><div class="star-fill" style="width:0%"></div></div><div class="star-pct">0%</div></div>
+        <div class="rating-bar-row"><div class="star-lbl">3 ★</div><div class="star-track"><div class="star-fill" style="width:0%"></div></div><div class="star-pct">0%</div></div>
+        <div class="rating-bar-row"><div class="star-lbl">2 ★</div><div class="star-track"><div class="star-fill" style="width:0%"></div></div><div class="star-pct">0%</div></div>
+        <div class="rating-bar-row"><div class="star-lbl">1 ★</div><div class="star-track"><div class="star-fill" style="width:0%"></div></div><div class="star-pct">0%</div></div>
+      </div>
+      <div class="rating-you">
+        <span>Đánh giá của bạn:</span>
+        <span class="rate-stars" id="rateStars">
+          <span class="rs" data-v="1">★</span>
+          <span class="rs" data-v="2">★</span>
+          <span class="rs" data-v="3">★</span>
+          <span class="rs" data-v="4">★</span>
+          <span class="rs" data-v="5">★</span>
+        </span>
+        <span id="rateMsg" style="margin-left:8px;color:#4ade80"></span>
+      </div>
+    </div>
+
+    <div class="zalo-grid">
+      <a class="zalo-card" href="https://zalo.me/g/rzyu2nxyanfryqckuwbm" target="_blank" rel="noopener"><div class="zic">💬</div><div class="zinfo"><div class="zname">Nhóm Zalo 1</div><div class="zsub">VÀO ↗</div></div></a>
+      <a class="zalo-card" href="https://zalo.me/g/rzyu2nxyanfryqckuwbm" target="_blank" rel="noopener"><div class="zic">💬</div><div class="zinfo"><div class="zname">Nhóm Zalo 2</div><div class="zsub">VÀO ↗</div></div></a>
+      <a class="zalo-card" href="https://zalo.me/g/rzyu2nxyanfryqckuwbm" target="_blank" rel="noopener"><div class="zic">💬</div><div class="zinfo"><div class="zname">Nhóm Zalo 3</div><div class="zsub">VÀO ↗</div></div></a>
+      <a class="zalo-card new" href="https://zalo.me/g/rzyu2nxyanfryqckuwbm" target="_blank" rel="noopener"><div class="zic">🔥</div><div class="zinfo"><div class="zname">Nhóm Zalo 4</div><div class="zsub" style="color:#ff4d5e">MỚI ↗</div></div></a>
+    </div>
+
+    <div class="zalo-footer">⚡ Hỗ trợ cài đặt & kích hoạt key 24/7 ❤️</div>
+
+    <!-- SECTION ROBLOX NỔI BẬT -->
+    <div class="sec-head" style="padding:10px 14px 4px">
+      <h2 class="no-icon" style="color:#4ade80;display:flex;align-items:center;gap:8px">🎮 Treo Game Roblox</h2>
+      <a class="view-all" style="color:#4ade80;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4)" onclick="go('roblox')">Xem tất cả →</a>
+    </div>
+    <div class="sec-head-wrap" style="padding-bottom:12px">
+      <div style="font-size:11px;color:var(--muted);line-height:1.5">Dịch vụ treo game Roblox tự động — nhập acc/pass, admin treo xong nhận kết quả</div>
+    </div>
+
+    <div class="roblox-feature">
+      <div class="rf-head">
+        <div class="rf-icon">🎮</div>
+        <div class="rf-title">
+          <h3>DỊCH VỤ TREO ROBLOX</h3>
+          <p>Steal An Egg • Phá & Cướp Trứng • BloxFruit</p>
+        </div>
+      </div>
+      <div class="rf-chips">
+        <span class="rf-chip">⚡ Treo tự động</span>
+        <span class="rf-chip">🕐 5-15 phút</span>
+        <span class="rf-chip">🔒 Bảo mật acc</span>
+        <span class="rf-chip">💰 Từ 4k</span>
+      </div>
+      <button class="rf-btn" onclick="go('roblox')">🎮 XEM DỊCH VỤ TREO ROBLOX →</button>
+    </div>
+
+    <div class="grid" id="gridHomeRoblox"></div>
+
+    <div class="sec-head" style="padding-bottom:4px;padding-top:10px">
+      <h2>Sản phẩm nổi bật</h2>
+      <a class="view-all" onclick="go('products')">Xem tất cả →</a>
+    </div>
+    <div class="sec-head-wrap">
+      <div style="font-size:11px;color:var(--muted);line-height:1.5">Khám phá bộ sưu tập sản phẩm chất lượng cao được chọn lọc dành riêng cho bạn</div>
+    </div>
+
+    <div class="cats" id="catsHome"></div>
+
+    <div class="grid" id="gridHome"></div>
+    <div class="load-more" onclick="go('products')">Tải thêm sản phẩm</div>
+  </div>
+
+  <div class="page" id="page-products">
+    <div class="sec-head" style="padding:20px 14px 12px"><h2>Tất cả sản phẩm</h2></div>
+    <div class="cats" id="catsProducts"></div>
+    <div class="grid" id="gridProducts"></div>
+  </div>
+
+  <div class="page" id="page-roblox">
+    <div class="pay-header" style="background:linear-gradient(135deg,#16a34a,#0d7a37);background-size:200% 200%;animation:gradShift 8s ease infinite">
+      <div class="ic">🎮</div>
+      <h2>Treo Game Roblox</h2>
+      <p>Dịch vụ treo tự động — nhập acc/pass, admin treo xong nhận kết quả</p>
+    </div>
+    <div class="notice-box" style="margin:0 14px 14px">
+      <h3>📌 HƯỚNG DẪN ĐẶT DỊCH VỤ</h3>
+      <p>1️⃣ Chọn gói dịch vụ bạn muốn • 2️⃣ Nhập <b>tài khoản + mật khẩu Roblox</b> • 3️⃣ Chờ admin treo (5-15 phút) • 4️⃣ Xem kết quả ở mục <b>Kho Key</b></p>
+    </div>
+    <div class="grid" id="gridRobloxPage"></div>
+  </div>
+
+  <div class="page" id="page-keys">
+    <div class="sec-head" style="padding:20px 14px 12px"><h2 style="font-size:18px">🔑 Kho Key của tôi</h2></div>
+    <div class="empty" id="keysEmpty">
+      <div class="ic">🔑</div>
+      <h3>Chưa có key nào</h3>
+      <p>Mua sản phẩm và chờ admin duyệt, key sẽ xuất hiện ở đây.</p>
+    </div>
+    <div id="keysList" style="padding:0 14px 20px"></div>
+  </div>
+
+  <div class="page" id="page-topup">
+    <div class="pay-header">
+      <div class="ic">💳</div>
+      <h2>Nạp tiền</h2>
+      <p>Chọn phương thức thanh toán</p>
+    </div>
+    <div class="form-card" id="topupNotLogged" style="display:none">
+      <h2>Chưa đăng nhập</h2>
+      <div class="sub">Bạn cần đăng nhập để nạp tiền</div>
+      <button class="btn-primary" onclick="go('info')">ĐĂNG NHẬP NGAY</button>
+    </div>
+    <div id="topupLogged" style="display:none">
+      <div class="form-card" id="topupStep1">
+        <div class="balance-box">
+          <div class="blabel">Số dư hiện tại</div>
+          <div class="bval" id="balanceDisplay">0đ</div>
+        </div>
+        <h2 style="font-size:18px;margin-bottom:14px">Nạp tiền vào tài khoản</h2>
+        <div class="amount-quick">
+          <button onclick="pickAmount(10000)">10.000đ</button>
+          <button onclick="pickAmount(20000)">20.000đ</button>
+          <button onclick="pickAmount(50000)">50.000đ</button>
+          <button onclick="pickAmount(100000)">100.000đ</button>
+          <button onclick="pickAmount(200000)">200.000đ</button>
+          <button onclick="pickAmount(500000)">500.000đ</button>
+        </div>
+        <div class="field">
+          <label>Số tiền muốn nạp</label>
+          <input id="topupAmount" type="number" placeholder="Nhập số tiền" min="10000" step="1000">
+        </div>
+        <button class="btn-primary" onclick="createTopup()">TẠO YÊU CẦU NẠP</button>
+      </div>
+
+      <div class="form-card" id="topupStep2" style="display:none">
+        <h2 style="font-size:18px">Quét QR để chuyển khoản</h2>
+        <div class="sub">Số tiền cần chuyển: <b id="topupNeedAmount" style="color:#fbbf24;font-size:14px">0đ</b></div>
+        <div class="qr-wrap" id="qrWrap"><div class="qr-loading">Đang tạo mã QR...</div></div>
+        <div class="bank-info">
+          <div class="brow"><span>Ngân hàng</span><b>MB Bank</b></div>
+          <div class="brow"><span>Số tài khoản</span><b class="acc">19038538632021</b></div>
+          <div class="brow"><span>Chủ TK</span><b>DANG THI NGOC</b></div>
+          <div class="brow"><span>Nội dung</span><b id="topupContent">naptien</b></div>
+        </div>
+        <div style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#fbbf24">
+          ⚠️ <b>Quan trọng:</b> Ghi đúng nội dung chuyển khoản là <b id="topupContent2">naptien</b>. Sau khi chuyển, bấm nút bên dưới.
+        </div>
+        <button class="btn-primary" id="confirmTopupBtn" onclick="confirmTopup()" style="margin-bottom:10px">✅ TÔI ĐÃ CHUYỂN KHOẢN</button>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#4a5570,#2a3245)" onclick="cancelTopup()">HỦY</button>
+      </div>
+
+      <div class="form-card" id="topupStep3" style="display:none;text-align:center">
+        <div style="font-size:60px;margin-bottom:14px">⏳</div>
+        <h2 style="font-size:20px;color:#fbbf24">Đang chờ duyệt!</h2>
+        <div class="sub">Yêu cầu nạp <b id="pendingAmount" style="color:#fbbf24">0đ</b> đã được gửi. Admin sẽ duyệt trong 1-15 phút.</div>
+        <button class="btn-primary" onclick="go('orders')" style="margin-bottom:10px">XEM ĐƠN HÀNG</button>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#4a5570,#2a3245)" onclick="resetTopup()">ĐÓNG</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page-orders">
+    <div class="sec-head" style="padding:20px 14px 12px"><h2 style="font-size:18px">Đơn hàng của tôi</h2></div>
+    <div class="empty" id="ordersEmpty">
+      <div class="ic">🧾</div>
+      <h3>Chưa có đơn hàng nào</h3>
+      <p>Bạn chưa mua sản phẩm nào. Hãy khám phá và chọn cho mình bản hack phù hợp nhé!</p>
+    </div>
+    <div id="ordersList" style="padding:0 14px 20px"></div>
+  </div>
+
+  <div class="page" id="page-info">
+    <div class="form-card" id="loginCard">
+      <h2>Đăng Nhập</h2>
+      <div class="sub">Vui lòng nhập thông tin đăng nhập</div>
+      <div class="field"><label>Username</label><input id="lgUser" type="text" placeholder="Vui lòng nhập username" autocomplete="off"></div>
+      <div class="field"><label>Mật khẩu</label><input id="lgPass" type="password" placeholder="Vui lòng nhập mật khẩu"></div>
+      <button class="btn-primary" onclick="doLogin()">ĐĂNG NHẬP</button>
+      <div class="form-footer"><a onclick="toast('Liên hệ admin để lấy lại mật khẩu')">Quên mật khẩu?</a></div>
+    </div>
+    <div class="form-card" style="margin-top:0" id="registerLinkCard">
+      <div class="form-footer" style="margin:0">Bạn chưa có tài khoản? <a onclick="showRegister()">Đăng Ký Ngay</a></div>
+    </div>
+    <div class="form-card" id="registerCard" style="display:none">
+      <h2>Đăng Ký</h2>
+      <div class="sub">Tạo tài khoản mới</div>
+      <div class="field"><label>Tên đăng ký (Username)</label><input id="rgUser" type="text" placeholder="3-24 ký tự, chữ + số + _" autocomplete="off" maxlength="24"></div>
+      <div class="field"><label>Mật khẩu đăng ký</label><input id="rgPass" type="password" placeholder="Tối thiểu 6 ký tự"></div>
+      <div class="field"><label>Nhập lại mật khẩu đăng ký</label><input id="rgPass2" type="password" placeholder="Nhập lại mật khẩu"></div>
+      <button class="btn-primary" onclick="doRegister()">TẠO TÀI KHOẢN</button>
+      <div class="form-footer">Đã có tài khoản? <a onclick="showLogin()">Đăng nhập</a></div>
+    </div>
+    <div class="form-card" id="loggedCard" style="display:none">
+      <h2>Xin chào 👋</h2>
+      <div class="sub" id="loggedName">—</div>
+      <div class="balance-box"><div class="blabel">Số dư</div><div class="bval" id="loggedBalance">0đ</div></div>
+      <button class="btn-primary" onclick="go('topup')" style="margin-bottom:10px">NẠP TIỀN</button>
+      <button class="btn-primary" onclick="go('keys')" style="margin-bottom:10px;background:linear-gradient(135deg,#16a34a,#15803d)">🔑 KHO KEY</button>
+      <button class="btn-primary" onclick="go('orders')" style="margin-bottom:10px;background:linear-gradient(135deg,#0ea5e9,#0284c7)">ĐƠN HÀNG</button>
+      <button class="btn-primary" id="adminPanelBtn" style="display:none;background:linear-gradient(135deg,#f59e0b,#b45309);margin-bottom:10px" onclick="go('admin')">🔐 ADMIN PANEL</button>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#dc2626,#7f1d1d)" onclick="doLogout()">ĐĂNG XUẤT</button>
+    </div>
+  </div>
+
+  <div class="page" id="page-admin">
+    <div class="sec-head" style="padding:20px 14px 12px"><h2 style="font-size:18px">🔐 Admin Panel</h2></div>
+    <div class="form-card" style="margin-top:0">
+      <div class="balance-box" style="border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)">
+        <div class="blabel" style="color:#fbbf24">Tổng doanh thu</div>
+        <div class="bval" id="adminRevenue" style="color:#fbbf24">0đ</div>
+      </div>
+    </div>
+
+    <div class="sec-head" style="padding:0 14px 12px"><h2 style="font-size:15px">📢 Gửi thông báo nổi</h2></div>
+    <div class="form-card" style="margin-top:0">
+      <div class="field"><label>Nội dung thông báo</label><textarea id="announceInput" placeholder="VD: Tối nay 20h shop bảo trì..."></textarea></div>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#f59e0b,#b45309)" onclick="sendAnnouncement()">📢 GỬI ĐẾN TẤT CẢ NGƯỜI DÙNG</button>
+    </div>
+    <div class="sec-head" style="padding:0 14px 12px"><h2 style="font-size:15px">📋 Lịch sử thông báo</h2></div>
+    <div id="adminAnnounceList" style="padding:0 14px 20px"></div>
+
+    <div class="sec-head" style="padding:0 14px 12px"><h2 style="font-size:15px">⏳ Yêu cầu nạp chờ duyệt</h2></div>
+    <div id="adminPendingList" style="padding:0 14px 20px"></div>
+
+    <div class="sec-head" style="padding:0 14px 12px"><h2 style="font-size:15px">🛒 Đơn mua chờ xử lý</h2></div>
+    <div id="adminPurchasePendingList" style="padding:0 14px 20px"></div>
+
+    <div class="sec-head" style="padding:0 14px 12px"><h2 style="font-size:15px">💬 Chat khách hàng</h2></div>
+    <div id="adminChatList" style="padding:0 14px 20px"></div>
+
+    <div class="sec-head" style="padding:0 14px 12px"><h2 style="font-size:15px">💰 Cộng/trừ tiền thủ công</h2></div>
+    <div class="form-card" style="margin-top:0">
+      <div class="field"><label>Username nhận</label><input id="manualUser" type="text" placeholder="VD: nono"></div>
+      <div class="field"><label>Số tiền (dương = cộng, âm = trừ)</label><input id="manualAmount" type="number" placeholder="VD: 50000 hoặc -20000" step="1000"></div>
+      <div class="field"><label>Ghi chú</label><input id="manualNote" type="text" placeholder="VD: cộng bù do lỗi"></div>
+      <button class="btn-primary" onclick="manualAdjust()">THỰC HIỆN</button>
+    </div>
+
+    <div class="sec-head" style="padding:20px 14px 12px"><h2 style="font-size:15px">🛒 Quản lý sản phẩm</h2></div>
+    <div class="form-card" style="margin-top:0">
+      <button class="btn-primary" style="background:linear-gradient(135deg,#0891b2,#0369a1)" onclick="openAddProduct()">➕ THÊM SẢN PHẨM MỚI</button>
+
+      <div class="prod-edit-form" id="prodEditForm">
+        <div class="field"><label>Tên sản phẩm</label><input id="peName" type="text" placeholder="VD: Troll Modz"></div>
+        <div class="prod-grid-2">
+          <div class="field"><label>Thumb (chữ trên ảnh)</label><input id="peThumb" type="text" placeholder="VD: TROLL"></div>
+          <div class="field"><label>Danh mục</label><input id="peCat" type="text" placeholder="ios / adr / pc / roblox"></div>
+        </div>
+        <div class="prod-grid-2">
+          <div class="field"><label>Màu nền</label><input id="peColor" type="text" placeholder="purple/blue/red/dark/green"></div>
+          <div class="field"><label>Badge</label><input id="peBadge" type="text" placeholder="HOT/PRO/NEW"></div>
+        </div>
+
+        <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)">
+          <div style="font-size:12px;font-weight:800;color:#fbbf24;margin-bottom:10px;letter-spacing:1px">📦 CÁC GÓI / MỨC GIÁ</div>
+          <div id="tiersEditor"></div>
+          <button class="btn-primary" id="addTierBtn" onclick="addTierRow()">➕ THÊM GÓI</button>
+        </div>
+
+        <button class="btn-primary" id="peSaveBtn" onclick="saveProduct()" style="margin-top:10px">LƯU SẢN PHẨM</button>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#4a5570,#2a3245);margin-top:8px" onclick="cancelProductEdit()">HỦY</button>
+      </div>
+    </div>
+    <div id="adminProductsList" style="padding:14px 14px 20px"></div>
+
+    <div class="sec-head" style="padding:0 14px 12px"><h2 style="font-size:15px">👥 Danh sách người dùng</h2></div>
+    <div id="adminUsersList" style="padding:0 14px 20px"></div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a class="nav-item active" data-page="home" onclick="go('home')"><span class="ni">🏠</span>TRANG CHỦ</a>
+  <a class="nav-item" data-page="products" onclick="go('products')"><span class="ni">📦</span>SẢN PHẨM</a>
+  <a class="nav-item roblox-nav" data-page="roblox" onclick="go('roblox')"><span class="ni">🎮</span>ROBLOX</a>
+  <a class="nav-item" data-page="keys" onclick="go('keys')"><span class="ni">🔑</span>KHO KEY</a>
+  <a class="nav-item" data-page="topup" onclick="go('topup')"><span class="ni">💳</span>NẠP TIỀN</a>
+  <a class="nav-item" data-page="orders" onclick="go('orders')"><span class="ni">🧾</span>ĐƠN</a>
+  <a class="nav-item admin-nav" data-page="admin" id="adminNavItem" style="display:none" onclick="go('admin')">
+    <span class="ni">🔐</span>ADMIN
+    <span class="badge-dot" id="adminBadge" style="display:none">0</span>
+  </a>
+</div>
+
+<button class="chat-fab" id="chatFab" onclick="toggleChat()">💬<span class="chat-badge" id="chatBadge">0</span></button>
+<div class="chat-panel" id="chatPanel">
+  <div class="cp-head">
+    <div class="cp-avatar">🎧</div>
+    <div class="cp-info">
+      <div class="cp-title">Hỗ trợ khách hàng</div>
+      <div class="cp-status">Admin thường trả lời trong 5 phút</div>
+    </div>
+    <button class="cp-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="cp-body" id="chatBody"></div>
+  <div class="cp-input">
+    <input id="chatInput" placeholder="Nhập tin nhắn..." maxlength="500">
+    <button onclick="sendChat()">Gửi</button>
+  </div>
+</div>
+
+<button class="music-toggle muted" id="musicToggle" onclick="toggleMusic()">🔇</button>
+
+<!-- ROBLOX ORDER MODAL -->
+<div class="roblox-modal-mask" id="robloxModalMask" onclick="closeRobloxModal(event)">
+  <div class="roblox-modal" onclick="event.stopPropagation()">
+    <div class="rm-head">
+      <div class="rm-title">🎮 Nhập tài khoản Roblox</div>
+      <button class="rm-close" onclick="closeRobloxModal()">✕</button>
+    </div>
+    <div class="rm-prod" id="rmProd">—</div>
+    <div class="rm-tier" id="rmTier">—</div>
+    <div class="rm-price" id="rmPrice">—</div>
+    <div class="field"><label>Tài khoản Roblox</label><input id="rmUser" placeholder="username hoặc email" autocomplete="off"></div>
+    <div class="field"><label>Mật khẩu Roblox</label><input id="rmPass" type="password" placeholder="mật khẩu đăng nhập"></div>
+    <div class="rm-note">⚠️ Thông tin chỉ dùng để treo game. Sau khi admin treo xong, bạn nên đổi lại mật khẩu cho an toàn.</div>
+    <button class="btn-primary" id="rmSubmitBtn" onclick="submitRobloxOrder()">XÁC NHẬN ĐẶT HÀNG</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ CONFIG ============
+const BANK = { code: "MBBANK", account: "19038538632021", owner: "DANG THI NGOC", name: "MB Bank" };
+
+// ============ PRODUCTS ============
+const DEFAULT_PRODUCTS = [
+  {id:1, name:"Drip Client", thumb:"DRIP CLIENT", color:"purple", cat:"adr", badge:"HOT", star:4.6, sold:418,
+   tiers:[
+     {id:"1d", label:"1 ngày", priceText:"35k / ngày", price:35000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"95k / tuần", price:95000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"195k / tháng", price:195000, stock:0, keys:[]}
+   ]},
+  {id:2, name:"Drip Wire", thumb:"DRIP WIRE", color:"purple", cat:"adr", badge:"", star:4.8, sold:618,
+   tiers:[
+     {id:"6h", label:"6 giờ", priceText:"15k / 6h", price:15000, stock:0, keys:[]},
+     {id:"1d", label:"1 ngày", priceText:"35k / ngày", price:35000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"120k / tuần", price:120000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"220k / tháng", price:220000, stock:0, keys:[]}
+   ]},
+  {id:3, name:"Xreg ADR/iOS", thumb:"XREG", color:"red", cat:"adr", badge:"", star:4.5, sold:340,
+   tiers:[
+     {id:"6h", label:"6 giờ", priceText:"20k / 6h", price:20000, stock:0, keys:[]},
+     {id:"1h", label:"1 giờ", priceText:"40k / 1h", price:40000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"120k / tuần", price:120000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"235k / tháng", price:235000, stock:0, keys:[]}
+   ]},
+  {id:4, name:"Troll Modz", thumb:"TROLL", color:"purple", cat:"ios", badge:"HOT", star:4.7, sold:512,
+   tiers:[
+     {id:"1h", label:"1 giờ", priceText:"5k / 1h", price:5000, stock:0, keys:[]},
+     {id:"6h", label:"6 giờ", priceText:"20k / 6h", price:20000, stock:0, keys:[]},
+     {id:"1d", label:"1 ngày", priceText:"40k / ngày", price:40000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"120k / tuần", price:120000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"235k / tháng", price:235000, stock:0, keys:[]}
+   ]},
+  {id:5, name:"Aim Hax", thumb:"AIM HAX", color:"red", cat:"adr", badge:"", star:4.5, sold:267,
+   tiers:[
+     {id:"1h", label:"1 giờ", priceText:"10k / 1h", price:10000, stock:0, keys:[]},
+     {id:"3h", label:"3 giờ", priceText:"17k / 3h", price:17000, stock:0, keys:[]},
+     {id:"1d", label:"1 ngày", priceText:"40k / ngày", price:40000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"120k / tuần", price:120000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"235k / tháng", price:235000, stock:0, keys:[]}
+   ]},
+  {id:6, name:"Inova Cheat", thumb:"INOVA", color:"dark", cat:"pc", badge:"", star:4.8, sold:189,
+   tiers:[
+     {id:"1d", label:"1 ngày", priceText:"20k / ngày", price:20000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"50k / tuần", price:50000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"100k / tháng", price:100000, stock:0, keys:[]}
+   ]},
+  {id:7, name:"Sophia Cheat", thumb:"SOPHIA", color:"dark", cat:"pc", badge:"", star:5.0, sold:109,
+   tiers:[
+     {id:"1d", label:"1 ngày", priceText:"25k / ngày", price:25000, stock:0, keys:[]},
+     {id:"7d", label:"7 ngày", priceText:"80k / 7 ngày", price:80000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"170k / tháng", price:170000, stock:0, keys:[]}
+   ]},
+  {id:8, name:"Migul Pro", thumb:"MIGUL PRO", color:"dark", cat:"pc", badge:"PRO", star:5.0, sold:796,
+   tiers:[
+     {id:"1d", label:"1 ngày", priceText:"60k / ngày", price:60000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"200k / tuần", price:200000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"350k / tháng", price:350000, stock:0, keys:[]}
+   ]},
+  {id:9, name:"Migul Basic", thumb:"MIGUL BASIC", color:"dark", cat:"pc", badge:"", star:4.8, sold:352,
+   tiers:[
+     {id:"1d", label:"1 ngày", priceText:"40k / ngày", price:40000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"150k / tuần", price:150000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"250k / tháng", price:250000, stock:0, keys:[]}
+   ]},
+  {id:10, name:"Menu Flork", thumb:"FLORK", color:"green", cat:"ios", badge:"", star:4.9, sold:415,
+   tiers:[
+     {id:"1m", label:"1 tháng", priceText:"150k / tháng", price:150000, stock:0, keys:[]}
+   ]},
+  {id:11, name:"Acc Clone Free Fire", thumb:"ACC CLONE FF", color:"green", cat:"clone", badge:"", star:4.7, sold:520,
+   tiers:[
+     {id:"kn", label:"KN Kai", priceText:"4k / acc", price:4000, stock:0, keys:[]},
+     {id:"lv8", label:"Level 8", priceText:"3k / acc", price:3000, stock:0, keys:[]}
+   ]},
+  {id:12, name:"Chứng chỉ Esign", thumb:"ESIGN CERT", color:"blue", cat:"esign", badge:"", star:5.0, sold:340,
+   tiers:[
+     {id:"1y", label:"1 năm", priceText:"50k / năm", price:50000, stock:0, keys:[]}
+   ]},
+  {id:13, name:"Delta Force Alpha", thumb:"DELTA FORCE", color:"red", cat:"pc", badge:"NEW", star:4.6, sold:178,
+   tiers:[
+     {id:"3h", label:"3 giờ", priceText:"20k / 3h", price:20000, stock:0, keys:[]},
+     {id:"1d", label:"1 ngày", priceText:"40k / ngày", price:40000, stock:0, keys:[]},
+     {id:"1w", label:"1 tuần", priceText:"180k / tuần", price:180000, stock:0, keys:[]},
+     {id:"1m", label:"1 tháng", priceText:"400k / tháng", price:400000, stock:0, keys:[]}
+   ]},
+  {id:14, name:"Fake Lag Shinmod", thumb:"FAKE LAG", color:"purple", cat:"ios", badge:"", star:4.5, sold:145,
+   tiers:[
+     {id:"1m", label:"1 tháng", priceText:"150k / tháng", price:150000, stock:0, keys:[]}
+   ]},
+  {id:15, name:"Steal An Egg", thumb:"STEAL EGG", color:"green", cat:"roblox", badge:"HOT", star:4.9, sold:230,
+   tiers:[
+     {id:"1h", label:"Treo 1 giờ (full lụm trứng + speed cày skien)", priceText:"4k / 1h", price:4000, stock:999, keys:[]},
+     {id:"6h", label:"Treo 6 giờ (full lụm trứng + speed cày skien)", priceText:"10k / 6h", price:10000, stock:999, keys:[]},
+     {id:"10h", label:"Treo 10 giờ (full lụm trứng + speed cày skien)", priceText:"15k / 10h", price:15000, stock:999, keys:[]},
+     {id:"24h", label:"Treo 24 giờ (full lụm trứng + speed cày skien)", priceText:"45k / 24h", price:45000, stock:999, keys:[]},
+     {id:"sp1d", label:"Treo speed 24 giờ", priceText:"20k / 24h", price:20000, stock:999, keys:[]},
+     {id:"sp5d", label:"Treo speed 5 ngày", priceText:"50k / 5 ngày", price:50000, stock:999, keys:[]},
+     {id:"sp7d", label:"Treo speed 1 tuần", priceText:"70k / tuần", price:70000, stock:999, keys:[]}
+   ]},
+  {id:16, name:"Phá & Cướp Trứng", thumb:"PHÁ CƯỚP", color:"red", cat:"roblox", badge:"", star:4.7, sold:145,
+   tiers:[
+     {id:"sp6h", label:"Treo speed 6 giờ", priceText:"10k / 6h", price:10000, stock:999, keys:[]},
+     {id:"sp1d", label:"Treo speed 1 ngày", priceText:"30k / ngày", price:30000, stock:999, keys:[]},
+     {id:"b7_10", label:"Lụm trứng trên 7B — 10 quả", priceText:"20k / 10 quả", price:20000, stock:999, keys:[]},
+     {id:"b7_20", label:"Lụm trứng trên 7B — 20 quả", priceText:"35k / 20 quả", price:35000, stock:999, keys:[]},
+     {id:"b20_5", label:"Lụm trứng trên 20B — 5 quả", priceText:"20k / 5 quả", price:20000, stock:999, keys:[]},
+     {id:"b20_10", label:"Lụm trứng trên 20B — 10 quả", priceText:"32k / 10 quả", price:32000, stock:999, keys:[]},
+     {id:"b70_1", label:"Lụm trứng trên 70B — 1 quả", priceText:"10k / 1 quả", price:10000, stock:999, keys:[]},
+     {id:"b70_5", label:"Lụm trứng trên 70B — 5 quả", priceText:"50k / 5 quả", price:50000, stock:999, keys:[]},
+     {id:"b70_10", label:"Lụm trứng trên 70B — 10 quả", priceText:"90k / 10 quả", price:90000, stock:999, keys:[]}
+   ]}
+];
+
+// Danh mục chỉ cho sản phẩm key (KHÔNG còn roblox)
+const CATEGORIES = [
+  {id:"all",icon:"📚",name:"Tất cả"},
+  {id:"ios",icon:"📱",name:"Hax Game IOS"},
+  {id:"adr",icon:"🤖",name:"Hax Game ADR"},
+  {id:"pc",icon:"💻",name:"Hax Game PC"},
+  {id:"clone",icon:"🎮",name:"Acc Clone FF"},
+  {id:"esign",icon:"🍎",name:"Chứng chỉ Esign"}
+];
+
+const KEY_USERS = "hvuong_users";
+const KEY_SESSION = "hvuong_session";
+const KEY_ORDERS = "hvuong_orders";
+const KEY_PENDING = "hvuong_pending_topups";
+const KEY_PRODUCTS = "hvuong_products";
+const KEY_RATINGS = "hvuong_ratings";
+const KEY_ANNOUNCE = "hvuong_announcements";
+const KEY_CHATS = "hvuong_chats";
+const PRODUCTS_VERSION = "v3";
+
+// ============ HELPERS ============
+function fmt(n){ return Number(n).toLocaleString("vi-VN") + "đ"; }
+function safeGet(key, fallback){
+  try{ const r = localStorage.getItem(key); if(r===null) return fallback; const p = JSON.parse(r); return p===null?fallback:p; }catch{ return fallback; }
+}
+function safeSet(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch{} }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// ============ PRODUCTS ============
+function loadProducts(){
+  const v = safeGet("hvuong_products_version", "");
+  if(v !== PRODUCTS_VERSION){
+    safeSet(KEY_PRODUCTS, JSON.parse(JSON.stringify(DEFAULT_PRODUCTS)));
+    safeSet("hvuong_products_version", PRODUCTS_VERSION);
+    return JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  }
+  const stored = safeGet(KEY_PRODUCTS, null);
+  if(!stored || !stored.length){
+    safeSet(KEY_PRODUCTS, JSON.parse(JSON.stringify(DEFAULT_PRODUCTS)));
+    return JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  }
+  return stored.map(p => ({...p, tiers: Array.isArray(p.tiers) ? p.tiers : []}));
+}
+function saveProducts(p){ safeSet(KEY_PRODUCTS, p); }
+function getNextProductId(){
+  const l = loadProducts();
+  return l.length ? Math.max(...l.map(p => p.id || 0)) + 1 : 1;
+}
+function getProductById(id){ return loadProducts().find(p => p.id === id); }
+
+function totalStock(p){
+  if(p.cat === "roblox") return 999;
+  return (p.tiers || []).reduce((s,t) => s + (t.stock || 0), 0);
+}
+function minPrice(p){
+  const arr = (p.tiers || []).filter(t => t.price > 0).map(t => t.price);
+  return arr.length ? Math.min(...arr) : 0;
+}
+function minPriceText(p){
+  const t = (p.tiers || []).filter(t => t.price > 0).sort((a,b)=>a.price-b.price)[0];
+  return t ? t.priceText : "—";
+}
+
+// ============ BUY ============
+function buyTier(productId, tierId){
+  const s = getSession();
+  if(!s){ toast("Vui lòng đăng nhập để mua hàng", true); go("info"); closeTierModal(); return; }
+  if(isAdmin()){ toast("Admin không mua hàng.", true); return; }
+
+  const list = loadProducts();
+  const pIdx = list.findIndex(p => p.id === productId);
+  if(pIdx < 0) return toast("Không tìm thấy sản phẩm", true);
+  const p = list[pIdx];
+  const tIdx = (p.tiers || []).findIndex(t => t.id === tierId);
+  if(tIdx < 0) return toast("Không tìm thấy gói", true);
+  const tier = p.tiers[tIdx];
+
+  // Sản phẩm Roblox: KHÔNG trừ kho, mở form nhập acc/pass
+  if(p.cat === "roblox"){
+    openRobloxOrderModal(productId, tierId);
+    return;
+  }
+
+  if(tier.stock <= 0){ toast("Gói này đã hết key!", true); return; }
+
+  const bal = getBalance();
+  if(bal < tier.price){
+    toast("Số dư không đủ (" + fmt(bal) + " / cần " + fmt(tier.price) + "). Nạp thêm!", true);
+    closeTierModal();
+    setTimeout(() => go("topup"), 900);
+    return;
+  }
+
+  updateUserRecord({ balance: bal - tier.price });
+  p.tiers[tIdx].stock = tier.stock - 1;
+  saveProducts(list);
+
+  const orderId = "ORD" + Date.now().toString(36).toUpperCase();
+  const orders = loadOrders();
+  orders.push({
+    id: orderId, user: s.username, userKey: s.key,
+    productId: productId, tierId: tierId,
+    item: p.name, tierLabel: tier.label, tierPriceText: tier.priceText,
+    amount: tier.price, key: null, keySeen: false,
+    type: "purchase_pending", status: "pending", at: Date.now()
+  });
+  saveOrders(orders);
+
+  closeTierModal();
+  toast("Mua thành công: " + p.name + " — " + tier.label + ". Chờ admin cấp key!");
+  updateAuthUI();
+  renderAll();
+  updateAdminBadge();
+  setTimeout(() => go("orders"), 800);
+}
+
+// ============ TIER MODAL ============
+function openTierModal(productId){
+  const p = getProductById(productId);
+  if(!p) return;
+  document.getElementById("tmIcon").className = "tm-icon " + (p.color || "purple");
+  document.getElementById("tmIcon").textContent = (p.thumb || "?").slice(0, 3);
+  document.getElementById("tmTitle").textContent = p.name;
+  document.getElementById("tmSub").textContent = p.cat === "roblox" ? "Chọn gói — nhập acc/pass sau khi chọn" : "Chọn gói bạn muốn mua";
+  const list = document.getElementById("tierList");
+  const isRoblox = p.cat === "roblox";
+  list.innerHTML = (p.tiers || []).map(t => {
+    const out = !isRoblox && t.stock <= 0;
+    return `
+      <div class="tier-item ${out?'disabled':''}" data-tid="${t.id}">
+        <div class="ti-left">
+          <div class="ti-label">${escapeHtml(t.label)}</div>
+          <div class="ti-price">${escapeHtml(t.priceText)}</div>
+          <div class="ti-stock">${isRoblox ? "🎮 Nhập acc sau khi chọn" : (out ? "Hết key" : "Còn " + t.stock + " key")}</div>
+        </div>
+        <button class="ti-btn" ${out?'disabled':''}>${out?'Hết':'Mua'}</button>
+      </div>`;
+  }).join("");
+  list.querySelectorAll(".tier-item").forEach(el => {
+    if(el.classList.contains("disabled")) return;
+    el.onclick = () => buyTier(productId, el.dataset.tid);
+  });
+  document.getElementById("tierModalMask").classList.add("show");
+}
+function closeTierModal(e){
+  if(e && e.target && e.target.id !== "tierModalMask") return;
+  document.getElementById("tierModalMask").classList.remove("show");
+}
+
+// ============ ROBLOX ORDER ============
+let robloxCurrent = { productId:null, tierId:null };
+
+function openRobloxOrderModal(productId, tierId){
+  const s = getSession();
+  if(!s){ toast("Vui lòng đăng nhập để mua hàng", true); go("info"); closeTierModal(); return; }
+  if(isAdmin()){ toast("Admin không mua hàng.", true); closeTierModal(); return; }
+  const p = getProductById(productId);
+  if(!p) return toast("Không tìm thấy sản phẩm", true);
+  const tier = (p.tiers || []).find(t => t.id === tierId);
+  if(!tier) return toast("Không tìm thấy gói", true);
+
+  const bal = getBalance();
+  if(bal < tier.price){
+    toast("Số dư không đủ (" + fmt(bal) + " / cần " + fmt(tier.price) + "). Nạp thêm!", true);
+    closeTierModal();
+    setTimeout(() => go("topup"), 900);
+    return;
+  }
+
+  robloxCurrent = { productId, tierId };
+  document.getElementById("rmProd").textContent = "📦 " + p.name;
+  document.getElementById("rmTier").textContent = "Gói: " + tier.label;
+  document.getElementById("rmPrice").textContent = "Giá: " + fmt(tier.price) + " · Số dư sau khi mua: " + fmt(bal - tier.price);
+  document.getElementById("rmUser").value = "";
+  document.getElementById("rmPass").value = "";
+  document.getElementById("rmSubmitBtn").disabled = false;
+  closeTierModal();
+  document.getElementById("robloxModalMask").classList.add("show");
+}
+
+function closeRobloxModal(e){
+  if(e && e.target && e.target.id !== "robloxModalMask") return;
+  document.getElementById("robloxModalMask").classList.remove("show");
+  robloxCurrent = { productId:null, tierId:null };
+}
+
+function submitRobloxOrder(){
+  const s = getSession();
+  if(!s){ toast("Vui lòng đăng nhập", true); return; }
+  const rUser = document.getElementById("rmUser").value.trim();
+  const rPass = document.getElementById("rmPass").value;
+  if(!rUser || rUser.length < 3) return toast("Nhập tài khoản Roblox (tối thiểu 3 ký tự)", true);
+  if(!rPass || rPass.length < 4) return toast("Nhập mật khẩu Roblox (tối thiểu 4 ký tự)", true);
+
+  const { productId, tierId } = robloxCurrent;
+  const p = getProductById(productId);
+  if(!p) return toast("Không tìm thấy sản phẩm", true);
+  const tier = (p.tiers || []).find(t => t.id === tierId);
+  if(!tier) return toast("Không tìm thấy gói", true);
+
+  const bal = getBalance();
+  if(bal < tier.price){
+    toast("Số dư không đủ. Nạp thêm!", true);
+    closeRobloxModal();
+    setTimeout(() => go("topup"), 900);
+    return;
+  }
+
+  updateUserRecord({ balance: bal - tier.price });
+
+  const orders = loadOrders();
+  const orderId = "RBX" + Date.now().toString(36).toUpperCase();
+  orders.push({
+    id: orderId, user: s.username, userKey: s.key,
+    productId, tierId, item: p.name, tierLabel: tier.label,
+    tierPriceText: tier.priceText, amount: tier.price,
+    robloxUser: rUser, robloxPass: rPass,
+    type: "roblox_pending", status: "pending", at: Date.now()
+  });
+  saveOrders(orders);
+
+  closeRobloxModal();
+  toast("Đã đặt hàng! Admin sẽ treo trong 5-15 phút.");
+  updateAuthUI();
+  renderAll();
+  updateAdminBadge();
+  setTimeout(() => go("orders"), 800);
+}
+
+// ============ RATING ============
+function loadRatings(){ return safeGet(KEY_RATINGS, {1:0,2:0,3:0,4:0,5:0}); }
+function saveRatings(r){ safeSet(KEY_RATINGS, r); }
+function addRating(star){ const r = loadRatings(); r[star] = (r[star]||0)+1; saveRatings(r); }
+function changeRating(o, n){ const r = loadRatings(); if(o && r[o]>0) r[o]--; r[n] = (r[n]||0)+1; saveRatings(r); }
+function getRatingStats(){
+  const r = loadRatings();
+  const total = (r[1]||0)+(r[2]||0)+(r[3]||0)+(r[4]||0)+(r[5]||0);
+  const sum = (r[1]||0)+(r[2]||0)*2+(r[3]||0)*3+(r[4]||0)*4+(r[5]||0)*5;
+  const avg = total > 0 ? (sum/total) : 0;
+  const pct = {};
+  for(let i=1;i<=5;i++) pct[i] = total > 0 ? Math.round(((r[i]||0)/total)*100) : 0;
+  return { counts: r, total, avg: Math.round(avg*10)/10, pct };
+}
+function renderRatingBox(){
+  const s = getRatingStats();
+  document.getElementById("rbScore").textContent = s.avg.toFixed(1);
+  document.getElementById("avgRating").textContent = s.avg.toFixed(1);
+  document.getElementById("totalRatings").textContent = s.total + " lượt đánh giá";
+  document.getElementById("rbCount").textContent = s.total > 0 ? s.total + " người đã đánh giá" : "Chưa có đánh giá nào";
+  const full = Math.round(s.avg);
+  document.getElementById("rbStars").textContent = "★★★★★".slice(0, full) + "☆☆☆☆☆".slice(0, 5-full);
+  document.querySelectorAll("#ratingBars .rating-bar-row").forEach((row, idx) => {
+    const star = 5 - idx;
+    row.querySelector(".star-fill").style.width = s.pct[star] + "%";
+    row.querySelector(".star-pct").textContent = s.pct[star] + "%";
+  });
+  const me = getSession();
+  const myRate = me ? (getUserRecord()?.rating || 0) : 0;
+  document.querySelectorAll("#rateStars .rs").forEach(el => el.classList.toggle("on", Number(el.dataset.v) <= myRate));
+  document.getElementById("rateMsg").textContent = myRate ? `(bạn đã đánh giá ${myRate}★)` : "";
+}
+
+// ============ USERS ============
+function loadUsers(){ return safeGet(KEY_USERS, {}); }
+function saveUsers(u){ safeSet(KEY_USERS, u); }
+function getSession(){ return safeGet(KEY_SESSION, null); }
+function setSession(u){ safeSet(KEY_SESSION, u); }
+function clearSession(){ try{ localStorage.removeItem(KEY_SESSION); }catch{} }
+function loadOrders(){ return safeGet(KEY_ORDERS, []); }
+function saveOrders(o){ safeSet(KEY_ORDERS, o); }
+function loadPending(){ return safeGet(KEY_PENDING, []); }
+function savePending(p){ safeSet(KEY_PENDING, p); }
+function getUserRecord(){ const s = getSession(); if(!s) return null; return loadUsers()[s.key] || null; }
+function getUserRecordByKey(key){ return loadUsers()[key] || null; }
+function updateUserRecordByKey(key, patch){ const u = loadUsers(); u[key] = Object.assign({}, u[key]||{}, patch); saveUsers(u); }
+function updateUserRecord(patch){ const s = getSession(); if(!s) return; updateUserRecordByKey(s.key, patch); }
+function getBalance(){ const r = getUserRecord(); return r && typeof r.balance === "number" ? r.balance : 0; }
+function isAdmin(){ const s = getSession(); return s && s.username === "admin"; }
+function countUsersThisMonth(){
+  const users = loadUsers(); const now = new Date(); const m = now.getMonth(), y = now.getFullYear();
+  let c = 0;
+  Object.values(users).forEach(u => {
+    if(!u.created) return;
+    const d = new Date(u.created);
+    if(d.getMonth() === m && d.getFullYear() === y) c++;
+  });
+  return c;
+}
+async function hash(str){
+  try{
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,"0")).join("");
+  }catch{ return "plain:" + btoa(unescape(encodeURIComponent(str))); }
+}
+async function seedAdmin(){
+  const users = loadUsers();
+  if(!users["admin"]){
+    users["admin"] = { username:"admin", hash: await hash("admin123"), balance:0, role:"admin", created:Date.now() };
+    saveUsers(users);
+  }
+  if(!safeGet(KEY_RATINGS, null)) saveRatings({1:0,2:0,3:0,4:0,5:0});
+  if(!safeGet(KEY_ANNOUNCE, null)) safeSet(KEY_ANNOUNCE, []);
+  if(!safeGet(KEY_CHATS, null)) safeSet(KEY_CHATS, {});
+  loadProducts();
+}
+
+// ============ ANNOUNCEMENT ============
+function loadAnnouncements(){ return safeGet(KEY_ANNOUNCE, []); }
+function saveAnnouncements(a){ safeSet(KEY_ANNOUNCE, a); }
+let currentAnnId = null;
+function showAnnPopup(ann){
+  if(!ann) return;
+  currentAnnId = ann.id;
+  document.getElementById("annPopupText").textContent = ann.text;
+  document.getElementById("annPopupTime").textContent = "Gửi lúc: " + new Date(ann.at).toLocaleString('vi-VN');
+  document.getElementById("annPopupMask").classList.add("show");
+}
+function closeAnnPopup(){
+  document.getElementById("annPopupMask").classList.remove("show");
+  if(currentAnnId){
+    const me = getSession();
+    const k = me ? "hvuong_ann_read_" + me.key : "hvuong_ann_read_guest";
+    safeSet(k, currentAnnId);
+  }
+}
+function checkNewAnnouncement(){
+  const me = getSession();
+  if(!me) return;
+  const list = loadAnnouncements();
+  if(!list.length) return;
+  const latest = list[list.length-1];
+  const k = "hvuong_ann_read_" + me.key;
+  if(safeGet(k, null) !== latest.id) showAnnPopup(latest);
+}
+function sendAnnouncement(){
+  if(!isAdmin()) return;
+  const text = document.getElementById("announceInput").value.trim();
+  if(!text) return toast("Nhập nội dung thông báo", true);
+  const a = loadAnnouncements();
+  a.push({ id:"AN"+Date.now().toString(36).toUpperCase(), text, at:Date.now(), by:"admin" });
+  saveAnnouncements(a);
+  document.getElementById("announceInput").value = "";
+  toast("Đã gửi thông báo đến tất cả người dùng!");
+  refreshAdminPanel();
+  setTimeout(() => checkNewAnnouncement(), 500);
+}
+function deleteAnnouncement(id){
+  if(!isAdmin()) return;
+  if(!confirm("Xoá thông báo này?")) return;
+  saveAnnouncements(loadAnnouncements().filter(x => x.id !== id));
+  refreshAdminPanel();
+}
+
+// ============ KEY POPUP ============
+let currentKeyOrderId = null;
+function showKeyPopup(order){
+  if(!order || !order.key) return;
+  currentKeyOrderId = order.id;
+  document.getElementById("kpProd").textContent = order.item || "—";
+  document.getElementById("kpTier").textContent = order.tierLabel ? ("Gói: " + order.tierLabel) : "";
+  document.getElementById("kpKey").textContent = order.key;
+  document.getElementById("kpKey").onclick = () => copyKey(order.key);
+  document.getElementById("keyPopupMask").classList.add("show");
+}
+function closeKeyPopup(){
+  document.getElementById("keyPopupMask").classList.remove("show");
+  if(currentKeyOrderId){
+    const orders = loadOrders();
+    const idx = orders.findIndex(o => o.id === currentKeyOrderId);
+    if(idx >= 0){ orders[idx].keySeen = true; saveOrders(orders); }
+    currentKeyOrderId = null;
+  }
+}
+function checkUnseenKeys(){
+  const me = getSession();
+  if(!me || isAdmin()) return;
+  const orders = loadOrders();
+  const unseen = orders.find(o => o.user === me.username && o.type === "purchase" && o.key && !o.keySeen);
+  if(unseen && !document.getElementById("keyPopupMask").classList.contains("show")){
+    showKeyPopup(unseen);
+  }
+}
+
+// ============ CHAT ============
+function loadChats(){ return safeGet(KEY_CHATS, {}); }
+function saveChats(c){ safeSet(KEY_CHATS, c); }
+function getChat(userKey){
+  const chats = loadChats();
+  return chats[userKey] || { user:"", messages:[], userUnread:0, adminUnread:0, lastAt:0 };
+}
+function pushChatMessage(userKey, username, from, text){
+  const chats = loadChats();
+  if(!chats[userKey]) chats[userKey] = { user:username, messages:[], userUnread:0, adminUnread:0, lastAt:0 };
+  chats[userKey].messages.push({ from, text, at: Date.now() });
+  chats[userKey].lastAt = Date.now();
+  if(from === "admin") chats[userKey].userUnread = (chats[userKey].userUnread || 0) + 1;
+  if(from === "user")  chats[userKey].adminUnread = (chats[userKey].adminUnread || 0) + 1;
+  saveChats(chats);
+}
+function markChatRead(k, who){
+  const chats = loadChats();
+  if(!chats[k]) return;
+  if(who === "user")  chats[k].userUnread = 0;
+  if(who === "admin") chats[k].adminUnread = 0;
+  saveChats(chats);
+}
+function totalAdminUnread(){ let t=0; Object.values(loadChats()).forEach(c => t += (c.adminUnread||0)); return t; }
+function totalUserUnread(){ const me = getSession(); if(!me) return 0; return getChat(me.key).userUnread || 0; }
+
+let chatOpen = false;
+function toggleChat(){
+  const me = getSession();
+  if(!me){ toast("Vui lòng đăng nhập để chat với admin", true); go("info"); return; }
+  chatOpen = !chatOpen;
+  document.getElementById("chatPanel").classList.toggle("open", chatOpen);
+  if(chatOpen){
+    markChatRead(me.key, "user");
+    renderChatBody();
+    updateChatBadge();
+    setTimeout(() => document.getElementById("chatInput")?.focus(), 100);
+  }
+}
+function sendChat(){
+  const me = getSession();
+  if(!me) return;
+  const inp = document.getElementById("chatInput");
+  const text = inp.value.trim();
+  if(!text) return;
+  pushChatMessage(me.key, me.username, "user", text);
+  inp.value = "";
+  renderChatBody();
+  updateChatBadge();
+}
+function renderChatBody(){
+  const me = getSession();
+  const body = document.getElementById("chatBody");
+  if(!me){ body.innerHTML = `<div class="chat-msg system">Vui lòng đăng nhập để chat</div>`; return; }
+  const c = getChat(me.key);
+  if(!c.messages.length){
+    body.innerHTML = `<div class="chat-msg system">👋 Chào ${escapeHtml(me.username)}! Gửi tin nhắn cho admin nếu cần hỗ trợ.</div>`;
+    return;
+  }
+  body.innerHTML = c.messages.map(m => `
+    <div class="chat-msg ${m.from}">
+      ${escapeHtml(m.text)}
+      <span class="cm-time">${new Date(m.at).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`).join("");
+  body.scrollTop = body.scrollHeight;
+}
+function updateChatBadge(){
+  const me = getSession();
+  const fab = document.getElementById("chatFab");
+  if(!me || isAdmin()){ fab.classList.remove("show"); return; }
+  fab.classList.add("show");
+  const unread = totalUserUnread();
+  const badge = document.getElementById("chatBadge");
+  if(unread > 0 && !chatOpen){ badge.textContent = unread; badge.classList.add("show"); }
+  else badge.classList.remove("show");
+}
+let adminChatUser = null;
+function openAdminChat(userKey){
+  adminChatUser = userKey;
+  markChatRead(userKey, "admin");
+  const list = document.getElementById("adminChatList");
+  const users = loadUsers();
+  const u = users[userKey];
+  list.innerHTML = `
+    <div class="admin-chat-view">
+      <div class="acv-head">
+        <div class="aci-avatar">${(u?.username || "?").charAt(0).toUpperCase()}</div>
+        <div class="acv-name">Chat với ${escapeHtml(u?.username || userKey)}</div>
+        <button style="padding:8px 14px;border:0;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#4a5570,#2a3245)" onclick="closeAdminChat()">Đóng</button>
+      </div>
+      <div class="acv-body" id="adminChatBody"></div>
+      <div class="acv-input">
+        <input id="adminChatInput" placeholder="Trả lời..." maxlength="500" onkeydown="if(event.key==='Enter')sendAdminChat()">
+        <button onclick="sendAdminChat()">Gửi</button>
+      </div>
+    </div>`;
+  renderAdminChatBody();
+  updateAdminBadge();
+}
+function closeAdminChat(){ adminChatUser = null; refreshAdminPanel(); }
+function renderAdminChatBody(){
+  if(!adminChatUser) return;
+  const c = getChat(adminChatUser);
+  const body = document.getElementById("adminChatBody");
+  if(!body) return;
+  if(!c.messages.length){ body.innerHTML = `<div class="chat-msg system">Chưa có tin nhắn</div>`; return; }
+  body.innerHTML = c.messages.map(m => `
+    <div class="chat-msg ${m.from === 'admin' ? 'user' : 'admin'}">
+      ${escapeHtml(m.text)}
+      <span class="cm-time">${new Date(m.at).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`).join("");
+  body.scrollTop = body.scrollHeight;
+}
+function sendAdminChat(){
+  if(!isAdmin() || !adminChatUser) return;
+  const inp = document.getElementById("adminChatInput");
+  const text = inp.value.trim();
+  if(!text) return;
+  const u = loadUsers();
+  pushChatMessage(adminChatUser, u[adminChatUser]?.username || adminChatUser, "admin", text);
+  inp.value = "";
+  renderAdminChatBody();
+  updateAdminBadge();
+}
+
+// ============ MUSIC ============
+const bgMusic = document.getElementById("bgMusic");
+const musicToggleBtn = document.getElementById("musicToggle");
+let musicStarted = false;
+function tryPlayMusic(){
+  if(musicStarted) return;
+  bgMusic.volume = 0.3;
+  const p = bgMusic.play();
+  if(p && p.then){
+    p.then(() => { musicStarted = true; musicToggleBtn.textContent = "🎵"; musicToggleBtn.classList.remove("muted"); }).catch(()=>{});
+  }
+}
+window.addEventListener("load", tryPlayMusic);
+["click","touchstart","keydown","scroll"].forEach(e => {
+  document.addEventListener(e, () => { if(!musicStarted) tryPlayMusic(); }, { once:true, passive:true });
+});
+function toggleMusic(){
+  if(bgMusic.paused){
+    bgMusic.play(); musicStarted = true;
+    musicToggleBtn.textContent = "🎵"; musicToggleBtn.classList.remove("muted");
+    toast("Đã bật nhạc nền 🎵");
+  } else {
+    bgMusic.pause();
+    musicToggleBtn.textContent = "🔇"; musicToggleBtn.classList.add("muted");
+    toast("Đã tắt nhạc");
+  }
+}
+
+// ============ RENDER ============
+function renderProductCard(p){
+  const isRoblox = p.cat === "roblox";
+  const stock = totalStock(p);
+  const out = !isRoblox && stock <= 0;
+  const low = !isRoblox && stock > 0 && stock <= 5;
+  const stockClass = out ? "out" : (low ? "low" : "");
+  const stockText = isRoblox ? "🎮 Nhập acc" : (out ? "Hết key" : "Còn " + stock + " key");
+  const shipClass = out ? "ship out" : "ship";
+  const shipText = isRoblox ? "Treo tự động" : (out ? "Hết hàng" : "Giao ngay");
+  return `
+    <div class="product ${out?'out-of-stock':''} ${isRoblox?'roblox-card':''}" data-id="${p.id}">
+      <div class="thumb ${p.color || 'dark'}">
+        ${p.badge ? `<div class="badge">${escapeHtml(p.badge)}</div>` : ""}
+        <div class="stock-tag ${stockClass}">${stockText}</div>
+        ${escapeHtml(p.thumb || 'ITEM')}
+      </div>
+      <div class="body">
+        <div class="pname">${escapeHtml(p.name)}</div>
+        <div class="price">Từ ${escapeHtml(minPriceText(p))}</div>
+        <div class="meta">
+          ${p.star ? `<span class="star">★ ${p.star}</span>` : ""}
+          <span class="sold">Đã bán ${p.sold || 0}</span>
+        </div>
+        <div class="${shipClass}">${shipText}</div>
+      </div>
+    </div>`;
+}
+function renderGrid(elId, list){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  if(!list.length){
+    el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#7a869e">Chưa có sản phẩm nào</div>`;
+    return;
+  }
+  el.innerHTML = list.map(renderProductCard).join("");
+  el.querySelectorAll(".product").forEach(card => {
+    card.addEventListener("click", () => openTierModal(Number(card.dataset.id)));
+  });
+}
+// RENDER ALL — TÁCH ROBLOX RA KHỎI SẢN PHẨM KEY
+function renderAll(){
+  const ALL = loadProducts();
+  const KEY_PRODUCTS = ALL.filter(p => p.cat !== "roblox");
+  const ROBLOX_PRODUCTS = ALL.filter(p => p.cat === "roblox");
+
+  renderGrid("gridHome", KEY_PRODUCTS.slice(0, 8));
+  renderGrid("gridProducts", KEY_PRODUCTS);
+  renderGrid("gridHomeRoblox", ROBLOX_PRODUCTS);
+  renderGrid("gridRobloxPage", ROBLOX_PRODUCTS);
+
+  renderCats();
+  renderStats();
+  renderRatingBox();
+  renderKeysPage();
+  updateChatBadge();
+  checkUnseenKeys();
+}
+function renderStats(){
+  const mu = countUsersThisMonth();
+  document.getElementById("monthUsers").textContent = mu;
+  document.getElementById("monthUsersSub").textContent = mu === 0 ? "Chưa có ai tháng này" : "Người đăng ký trong tháng";
+}
+function renderCats(){
+  const mk = (elId) => {
+    const c = document.getElementById(elId);
+    if(!c) return;
+    c.innerHTML = CATEGORIES.map((cat, i) => `
+      <div class="cat ${i===0?'active':''}" data-cat="${cat.id}">
+        <span class="cicon">${cat.icon}</span> ${cat.name}
+      </div>`).join("");
+    bindCats(elId, elId === "catsHome" ? "gridHome" : "gridProducts");
+  };
+  mk("catsHome"); mk("catsProducts");
+}
+function bindCats(cid, gid){
+  const c = document.getElementById(cid);
+  if(!c) return;
+  c.querySelectorAll(".cat").forEach(btn => {
+    btn.onclick = () => {
+      c.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const cat = btn.dataset.cat;
+      const P = loadProducts().filter(p => p.cat !== "roblox");
+      renderGrid(gid, cat === "all" ? P : P.filter(p => p.cat === cat));
+    };
+  });
+}
+
+// ============ NAV ============
+function go(page){
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const el = document.getElementById("page-" + page);
+  if(el) el.classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.page === page));
+  window.scrollTo({top:0, behavior:"smooth"});
+  if(page === "topup") refreshTopupView();
+  if(page === "orders") refreshOrdersView();
+  if(page === "keys") renderKeysPage();
+  if(page === "admin") refreshAdminPanel();
+  if(page === "products" || page === "home" || page === "roblox") renderAll();
+}
+function openDrawer(){ document.getElementById("drawer").classList.add("open"); document.getElementById("mask").classList.add("open"); }
+function closeDrawer(){ document.getElementById("drawer").classList.remove("open"); document.getElementById("mask").classList.remove("open"); }
+
+let toastTimer;
+function toast(msg, isErr){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.toggle("err", !!isErr);
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+// ============ AUTH ============
+async function doRegister(){
+  const u  = document.getElementById("rgUser").value.trim();
+  const p  = document.getElementById("rgPass").value;
+  const p2 = document.getElementById("rgPass2").value;
+  if(!/^[a-zA-Z0-9_]{3,24}$/.test(u)) return toast("Username 3-24 ký tự, chỉ chữ, số, _", true);
+  if(u.toLowerCase() === "admin") return toast("Username này bị cấm", true);
+  if(p.length < 6) return toast("Mật khẩu tối thiểu 6 ký tự", true);
+  if(p !== p2) return toast("Hai mật khẩu không khớp", true);
+  const users = loadUsers();
+  const key = u.toLowerCase();
+  if(users[key]) return toast("Username đã tồn tại", true);
+  users[key] = { username:u, hash:await hash(p), balance:0, role:"user", rating:0, created:Date.now() };
+  saveUsers(users);
+  setSession({ username:u, key });
+  document.getElementById("rgPass").value = "";
+  document.getElementById("rgPass2").value = "";
+  toast("Đăng ký thành công! Đã đăng nhập.");
+  updateAuthUI(); showLogged(); refreshTopupView(); renderAll();
+  setTimeout(() => checkNewAnnouncement(), 800);
+}
+async function doLogin(){
+  const u = document.getElementById("lgUser").value.trim();
+  const p = document.getElementById("lgPass").value;
+  if(!u || !p) return toast("Nhập đầy đủ username và mật khẩu", true);
+  const users = loadUsers();
+  const rec = users[u.toLowerCase()];
+  if(!rec) return toast("Username không tồn tại", true);
+  if(await hash(p) !== rec.hash) return toast("Sai mật khẩu", true);
+  if(typeof rec.balance !== "number"){ rec.balance = 0; users[u.toLowerCase()] = rec; saveUsers(users); }
+  setSession({ username:rec.username, key:u.toLowerCase() });
+  document.getElementById("lgPass").value = "";
+  toast("Đăng nhập thành công!" + (rec.role === "admin" ? " 👑 ADMIN" : ""));
+  updateAuthUI(); showLogged(); refreshTopupView(); renderAll();
+  setTimeout(() => checkNewAnnouncement(), 800);
+}
+function doLogout(){
+  if(chatOpen) toggleChat();
+  clearSession();
+  document.getElementById("lgUser").value = "";
+  document.getElementById("lgPass").value = "";
+  toast("Đã đăng xuất");
+  updateAuthUI(); showLogin(); refreshTopupView(); renderAll();
+}
+function showLogin(){
+  document.getElementById("loginCard").style.display = "block";
+  document.getElementById("registerLinkCard").style.display = "block";
+  document.getElementById("registerCard").style.display = "none";
+  document.getElementById("loggedCard").style.display = "none";
+}
+function showRegister(){
+  document.getElementById("loginCard").style.display = "none";
+  document.getElementById("registerLinkCard").style.display = "none";
+  document.getElementById("registerCard").style.display = "block";
+  document.getElementById("loggedCard").style.display = "none";
+}
+function showLogged(){
+  const s = getSession();
+  if(!s) return showLogin();
+  document.getElementById("loggedName").textContent = s.username + (isAdmin() ? " (Admin)" : "");
+  document.getElementById("loggedBalance").textContent = fmt(getBalance());
+  document.getElementById("loginCard").style.display = "none";
+  document.getElementById("registerLinkCard").style.display = "none";
+  document.getElementById("registerCard").style.display = "none";
+  document.getElementById("loggedCard").style.display = "block";
+  document.getElementById("adminPanelBtn").style.display = isAdmin() ? "block" : "none";
+}
+function updateAuthUI(){
+  const s = getSession();
+  const name = document.getElementById("drawerName");
+  const sub = document.getElementById("drawerSub");
+  const av = document.getElementById("drawerAvatar");
+  const adminItem = document.getElementById("adminDrawerItem");
+  const adminNav = document.getElementById("adminNavItem");
+  if(s){
+    name.textContent = s.username + (isAdmin() ? " 👑" : "");
+    sub.textContent = "Số dư: " + fmt(getBalance());
+    av.textContent = s.username.charAt(0).toUpperCase();
+    adminItem.style.display = isAdmin() ? "flex" : "none";
+    adminNav.style.display = isAdmin() ? "flex" : "none";
+  } else {
+    name.textContent = "Khách"; sub.textContent = "Chưa đăng nhập"; av.textContent = "👤";
+    adminItem.style.display = "none"; adminNav.style.display = "none";
+  }
+  updateAdminBadge();
+  updateChatBadge();
+}
+function updateAdminBadge(){
+  const b = document.getElementById("adminBadge");
+  if(!b) return;
+  if(!isAdmin()){ b.style.display = "none"; return; }
+  const pending = loadPending();
+  const pp = loadOrders().filter(o => o.type === "purchase_pending" || o.type === "roblox_pending");
+  const chat = totalAdminUnread();
+  const total = pending.length + pp.length + chat;
+  if(total > 0){ b.textContent = total; b.style.display = "flex"; } else b.style.display = "none";
+}
+
+// ============ TOPUP ============
+let topupPendingAmount = 0, topupProcessing = false;
+function refreshTopupView(){
+  const s = getSession();
+  const nl = document.getElementById("topupNotLogged");
+  const lg = document.getElementById("topupLogged");
+  if(!s){ nl.style.display = "block"; lg.style.display = "none"; return; }
+  nl.style.display = "none"; lg.style.display = "block";
+  document.getElementById("balanceDisplay").textContent = fmt(getBalance());
+  const s1 = document.getElementById("topupStep1"), s2 = document.getElementById("topupStep2"), s3 = document.getElementById("topupStep3");
+  if(s3.style.display !== "none"){ s1.style.display = "block"; s2.style.display = "none"; s3.style.display = "none"; document.getElementById("topupAmount").value = ""; }
+  else if(s2.style.display === "none" && s3.style.display === "none"){ s1.style.display = "block"; }
+}
+function pickAmount(n){ document.getElementById("topupAmount").value = n; }
+function buildVietQRUrl(amount, content){
+  const p = new URLSearchParams();
+  if(amount) p.set("amount", amount);
+  if(content) p.set("addInfo", content);
+  p.set("accountName", BANK.owner);
+  return `https://img.vietqr.io/image/${BANK.code}-${BANK.account}-compact.png?${p.toString()}`;
+}
+function renderQR(amount, content){
+  const w = document.getElementById("qrWrap");
+  const url = buildVietQRUrl(amount, content);
+  w.innerHTML = `<div class="qr-loading">Đang tạo mã QR...</div>`;
+  const img = new Image();
+  img.style.cssText = "max-width:100%;display:block;border-radius:8px;margin:0 auto";
+  img.onload = () => {
+    w.innerHTML = "";
+    w.appendChild(img);
+    const a = document.createElement("div"); a.className = "qr-amount"; a.textContent = fmt(amount); w.appendChild(a);
+    const n = document.createElement("div"); n.className = "qr-note";
+    n.innerHTML = `Chuyển <b>${fmt(amount)}</b> nội dung <b>${content}</b>`;
+    w.appendChild(n);
+  };
+  img.onerror = () => { w.innerHTML = `<div class="qr-error">⚠️ Không tải được QR. Chuyển thủ công: <b>${BANK.name} · ${BANK.account}</b> · <b>${BANK.owner}</b> · nội dung <b>${content}</b></div>`; };
+  img.src = url;
+}
+function createTopup(){
+  const s = getSession();
+  if(!s){ toast("Vui lòng đăng nhập", true); go("info"); return; }
+  const amount = Number(document.getElementById("topupAmount").value);
+  if(!Number.isInteger(amount) || amount < 10000) return toast("Số tiền tối thiểu 10.000đ", true);
+  if(amount > 50000000) return toast("Số tiền tối đa 50.000.000đ", true);
+  topupPendingAmount = amount;
+  const code = s.username + " " + amount;
+  document.getElementById("topupNeedAmount").textContent = fmt(amount);
+  document.getElementById("topupContent").textContent = code;
+  document.getElementById("topupContent2").textContent = code;
+  document.getElementById("confirmTopupBtn").disabled = false;
+  document.getElementById("topupStep1").style.display = "none";
+  document.getElementById("topupStep2").style.display = "block";
+  document.getElementById("topupStep3").style.display = "none";
+  renderQR(amount, code);
+}
+function confirmTopup(){
+  if(topupProcessing) return;
+  const s = getSession();
+  if(!s) return toast("Vui lòng đăng nhập", true);
+  if(topupPendingAmount <= 0) return toast("Chưa có yêu cầu nạp", true);
+  topupProcessing = true;
+  document.getElementById("confirmTopupBtn").disabled = true;
+  const reqId = "REQ" + Date.now().toString(36).toUpperCase();
+  const pending = loadPending();
+  pending.push({ id:reqId, username:s.username, userKey:s.key, amount:topupPendingAmount, content:s.username + " " + topupPendingAmount, at:Date.now(), status:"pending" });
+  savePending(pending);
+  const orders = loadOrders();
+  orders.push({ id:reqId, user:s.username, amount:topupPendingAmount, type:"topup_pending", at:Date.now() });
+  saveOrders(orders);
+  document.getElementById("pendingAmount").textContent = fmt(topupPendingAmount);
+  document.getElementById("topupStep2").style.display = "none";
+  document.getElementById("topupStep3").style.display = "block";
+  toast("Đã gửi yêu cầu nạp. Chờ admin duyệt!");
+  topupPendingAmount = 0; topupProcessing = false;
+  updateAdminBadge();
+}
+function cancelTopup(){ topupPendingAmount = 0; document.getElementById("topupStep2").style.display = "none"; document.getElementById("topupStep1").style.display = "block"; document.getElementById("topupAmount").value = ""; }
+function resetTopup(){ document.getElementById("topupStep3").style.display = "none"; document.getElementById("topupStep1").style.display = "block"; document.getElementById("topupAmount").value = ""; }
+
+// ============ ORDERS ============
+function refreshOrdersView(){
+  const s = getSession();
+  const empty = document.getElementById("ordersEmpty");
+  const list = document.getElementById("ordersList");
+  if(!s){ empty.style.display = "block"; list.innerHTML = ""; return; }
+  const orders = loadOrders().filter(o => o.user === s.username);
+  if(!orders.length){ empty.style.display = "block"; list.innerHTML = ""; return; }
+  empty.style.display = "none";
+  list.innerHTML = [...orders].reverse().map(o => {
+    let icon = "📦", title = "", color = "#4ade80", prefix = "+", extra = "";
+    if(o.type === "topup_pending"){ icon = "⏳"; title = "Nạp tiền (chờ duyệt)"; color = "#fbbf24"; prefix = ""; }
+    else if(o.type === "topup"){ icon = "💳"; title = "Nạp tiền (đã duyệt)"; color = "#4ade80"; prefix = "+"; }
+    else if(o.type === "topup_rejected"){ icon = "❌"; title = "Nạp tiền (bị từ chối)"; color = "#dc2626"; prefix = ""; }
+    else if(o.type === "roblox_pending"){
+      icon = "🎮";
+      title = "Treo Roblox: " + (o.item || "") + " — " + (o.tierLabel || "") + " (chờ xử lý)";
+      color = "#fbbf24"; prefix = "-";
+      extra = `<div class="pending-key">🎮 Acc gửi: <b>${escapeHtml(o.robloxUser||'')}</b> — Đang chờ admin treo...</div>`;
+    }
+    else if(o.type === "roblox"){
+      icon = "🎮";
+      title = "Treo Roblox: " + (o.item || "") + " — " + (o.tierLabel || "");
+      color = "#4ade80"; prefix = "-";
+      extra = `<div class="key-display" onclick="copyToClipboard('${escapeHtml(o.robloxUser||'')}')">✅ Đã treo xong — Acc: ${escapeHtml(o.robloxUser||'')}</div>`;
+    }
+    else if(o.type === "roblox_rejected"){
+      icon = "❌";
+      title = "Treo Roblox: " + (o.item||"") + " — " + (o.tierLabel||"") + " (bị từ chối)";
+      color = "#dc2626"; prefix = "";
+    }
+    else if(o.type === "purchase_pending"){
+      icon = "⏳";
+      title = "Mua: " + (o.item || "sản phẩm") + " — " + (o.tierLabel || "") + " (chờ key)";
+      color = "#fbbf24"; prefix = "-";
+      extra = `<div class="pending-key">⏳ Đang chờ admin cấp key...</div>`;
+    }
+    else if(o.type === "purchase"){
+      icon = "📦";
+      title = "Mua: " + (o.item || "sản phẩm") + " — " + (o.tierLabel || "");
+      color = "#4ade80"; prefix = "-";
+      if(o.key) extra = `<div class="key-display" onclick="copyKey('${escapeHtml(o.key)}')">${escapeHtml(o.key)}</div>`;
+    }
+    else if(o.type === "purchase_rejected"){ icon = "❌"; title = "Mua: " + (o.item||"") + " — " + (o.tierLabel||"") + " (bị từ chối)"; color = "#dc2626"; prefix = ""; }
+    else if(o.type === "manual_add"){ icon = "💰"; title = "Admin cộng tiền" + (o.note ? ": "+o.note : ""); color = "#4ade80"; prefix = "+"; }
+    else if(o.type === "manual_sub"){ icon = "💸"; title = "Admin trừ tiền" + (o.note ? ": "+o.note : ""); color = "#dc2626"; prefix = "-"; }
+    return `
+      <div class="admin-row" style="margin-bottom:8px">
+        <div class="arow"><span>${icon} ${escapeHtml(title)}</span><b class="amount" style="color:${color}">${prefix}${fmt(o.amount)}</b></div>
+        <div class="arow"><span>${o.id}</span><span>${new Date(o.at).toLocaleString('vi-VN')}</span></div>
+        ${extra}
+      </div>`;
+  }).join("");
+}
+function copyKey(k){
+  k = String(k).trim();
+  if(navigator.clipboard) navigator.clipboard.writeText(k).then(() => toast("Đã copy: " + k));
+  else toast("Nội dung: " + k);
+}
+function renderKeysPage(){
+  const s = getSession();
+  const empty = document.getElementById("keysEmpty");
+  const list = document.getElementById("keysList");
+  if(!s){ empty.style.display = "block"; list.innerHTML = ""; return; }
+  const keyOrders = loadOrders().filter(o => o.user === s.username && o.type === "purchase" && o.key);
+  const robloxOrders = loadOrders().filter(o => o.user === s.username && o.type === "roblox");
+  if(!keyOrders.length && !robloxOrders.length){ empty.style.display = "block"; list.innerHTML = ""; return; }
+  empty.style.display = "none";
+
+  const keyHtml = [...keyOrders].reverse().map(o => `
+    <div class="admin-row">
+      <div class="arow"><span>📦 ${escapeHtml(o.item)} — ${escapeHtml(o.tierLabel || "")}</span><b class="amount" style="color:#4ade80">${fmt(o.amount)}</b></div>
+      <div class="arow"><span>${o.id}</span><span>${new Date(o.at).toLocaleString('vi-VN')}</span></div>
+      <div class="key-display" onclick="copyKey('${escapeHtml(o.key)}')">${escapeHtml(o.key)}</div>
+    </div>`).join("");
+
+  const robloxHtml = [...robloxOrders].reverse().map(o => `
+    <div class="admin-row">
+      <div class="arow"><span>🎮 ${escapeHtml(o.item)} — ${escapeHtml(o.tierLabel || "")}</span><b class="amount" style="color:#4ade80">${fmt(o.amount)}</b></div>
+      <div class="arow"><span>${o.id}</span><span>${new Date(o.at).toLocaleString('vi-VN')}</span></div>
+      <div class="key-display" onclick="copyToClipboard('${escapeHtml(o.robloxUser||'')}')">🎮 Acc Roblox: ${escapeHtml(o.robloxUser||'')}</div>
+      <div class="pending-key" style="background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.4);color:#4ade80;border-style:solid">✅ Đã treo xong lúc ${new Date(o.deliveredAt||o.at).toLocaleString('vi-VN')}</div>
+    </div>`).join("");
+
+  list.innerHTML = keyHtml + robloxHtml;
+}
+
+// ============ ADMIN PANEL ============
+function copyToClipboard(txt){
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast("Đã copy: " + txt));
+  else toast("Nội dung: " + txt);
+}
+function manualAdjust(){
+  if(!isAdmin()) return;
+  const u = document.getElementById("manualUser").value.trim();
+  const a = document.getElementById("manualAmount").value.trim();
+  const n = document.getElementById("manualNote").value.trim();
+  if(!u) return toast("Nhập username", true);
+  const amount = Number(a);
+  if(!Number.isInteger(amount) || amount === 0) return toast("Số tiền phải là số nguyên khác 0", true);
+  const key = u.toLowerCase();
+  const rec = getUserRecordByKey(key);
+  if(!rec) return toast("User không tồn tại: " + u, true);
+  if(rec.role === "admin") return toast("Không thể chỉnh admin khác", true);
+  const oldBal = rec.balance || 0;
+  const newBal = Math.max(0, oldBal + amount);
+  updateUserRecordByKey(key, { balance: newBal });
+  const orders = loadOrders();
+  orders.push({ id:"MAN"+Date.now().toString(36).toUpperCase(), user:rec.username, amount:Math.abs(amount), type: amount>0?"manual_add":"manual_sub", note: n||"Điều chỉnh thủ công", at:Date.now() });
+  saveOrders(orders);
+  toast((amount>0?"Đã cộng ":"Đã trừ ") + fmt(Math.abs(amount)) + " — " + rec.username);
+  document.getElementById("manualUser").value = "";
+  document.getElementById("manualAmount").value = "";
+  document.getElementById("manualNote").value = "";
+  refreshAdminPanel();
+  updateAuthUI();
+}
+
+// ============ PRODUCT CRUD ============
+let editingProductId = null;
+
+function addTierRow(data){
+  data = data || {id:"", label:"", priceText:"", price:0, stock:0, keys:[]};
+  const wrap = document.getElementById("tiersEditor");
+  const div = document.createElement("div");
+  div.className = "tier-editor";
+  div.innerHTML = `
+    <div class="te-head">
+      <div class="te-title">Gói</div>
+      <button type="button" class="te-del" onclick="this.closest('.tier-editor').remove()">✕ XOÁ GÓI</button>
+    </div>
+    <div class="te-grid">
+      <div>
+        <span class="te-label">Mã gói (vd: 1h, 1d, 1m)</span>
+        <input class="te-id" type="text" placeholder="1d" value="${escapeHtml(data.id||'')}">
+      </div>
+      <div>
+        <span class="te-label">Nhãn hiển thị (vd: 1 ngày)</span>
+        <input class="te-label-inp" type="text" placeholder="1 ngày" value="${escapeHtml(data.label||'')}">
+      </div>
+    </div>
+    <div class="te-grid">
+      <div>
+        <span class="te-label">Giá text (vd: 35k / ngày)</span>
+        <input class="te-pricetext" type="text" placeholder="35k / ngày" value="${escapeHtml(data.priceText||'')}">
+      </div>
+      <div>
+        <span class="te-label">Giá số (VND)</span>
+        <input class="te-price" type="number" placeholder="35000" step="1000" value="${data.price||''}">
+      </div>
+    </div>
+    <div>
+      <span class="te-label">Tồn kho (số lượng key còn lại)</span>
+      <input class="te-stock" type="number" placeholder="0" min="0" value="${data.stock||0}">
+    </div>
+    <div style="margin-top:6px">
+      <span class="te-label">Kho key (mỗi dòng 1 key)</span>
+      <textarea class="te-keys" placeholder="KEY-1&#10;KEY-2&#10;KEY-3">${escapeHtml((data.keys||[]).join("\n"))}</textarea>
+    </div>
+  `;
+  wrap.appendChild(div);
+}
+
+function openAddProduct(){
+  editingProductId = null;
+  document.getElementById("prodEditForm").classList.add("open");
+  ["peName","peThumb","peCat","peColor","peBadge"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("tiersEditor").innerHTML = "";
+  addTierRow({id:"1d", label:"1 ngày", priceText:"20k / ngày", price:20000, stock:0, keys:[]});
+  document.getElementById("peSaveBtn").textContent = "LƯU SẢN PHẨM MỚI";
+  document.getElementById("prodEditForm").scrollIntoView({behavior:"smooth"});
+}
+function editProduct(id){
+  const p = getProductById(id);
+  if(!p) return;
+  editingProductId = id;
+  document.getElementById("prodEditForm").classList.add("open");
+  document.getElementById("peName").value = p.name || "";
+  document.getElementById("peThumb").value = p.thumb || "";
+  document.getElementById("peCat").value = p.cat || "ios";
+  document.getElementById("peColor").value = p.color || "purple";
+  document.getElementById("peBadge").value = p.badge || "";
+  document.getElementById("tiersEditor").innerHTML = "";
+  (p.tiers || []).forEach(t => addTierRow(t));
+  document.getElementById("peSaveBtn").textContent = "CẬP NHẬT SẢN PHẨM";
+  document.getElementById("prodEditForm").scrollIntoView({behavior:"smooth"});
+}
+function cancelProductEdit(){
+  editingProductId = null;
+  document.getElementById("prodEditForm").classList.remove("open");
+}
+function saveProduct(){
+  if(!isAdmin()) return;
+  const name = document.getElementById("peName").value.trim();
+  const thumb = document.getElementById("peThumb").value.trim() || "ITEM";
+  const cat = document.getElementById("peCat").value.trim() || "ios";
+  const color = document.getElementById("peColor").value.trim() || "purple";
+  const badge = document.getElementById("peBadge").value.trim();
+  if(!name) return toast("Nhập tên sản phẩm", true);
+
+  const tierRows = document.querySelectorAll("#tiersEditor .tier-editor");
+  const tiers = [];
+  for(const row of tierRows){
+    const tid = row.querySelector(".te-id").value.trim();
+    const label = row.querySelector(".te-label-inp").value.trim();
+    const priceText = row.querySelector(".te-pricetext").value.trim();
+    const price = Number(row.querySelector(".te-price").value);
+    const stockInput = Number(row.querySelector(".te-stock").value);
+    const keysRaw = row.querySelector(".te-keys").value;
+    const keys = keysRaw.split("\n").map(k => k.trim()).filter(Boolean);
+
+    if(!tid || !label) return toast("Điền mã gói và nhãn cho mọi gói", true);
+    if(!Number.isInteger(price) || price <= 0) return toast("Giá số phải > 0 — gói: " + label, true);
+
+    const stock = (Number.isInteger(stockInput) && stockInput >= 0 && stockInput !== 0) ? stockInput : keys.length;
+    const finalStock = (stockInput === 0 && keys.length > 0) ? keys.length : Math.max(0, stock);
+
+    tiers.push({ id:tid, label, priceText: priceText || (price/1000) + "k", price, stock: finalStock, keys });
+  }
+  if(!tiers.length) return toast("Thêm ít nhất 1 gói", true);
+
+  const PRODUCTS = loadProducts();
+  if(editingProductId){
+    const idx = PRODUCTS.findIndex(p => p.id === editingProductId);
+    if(idx < 0) return toast("Không tìm thấy sản phẩm", true);
+    PRODUCTS[idx] = Object.assign({}, PRODUCTS[idx], { name, thumb, cat, color, badge, tiers });
+    toast("Đã cập nhật: " + name);
+  } else {
+    PRODUCTS.push({ id:getNextProductId(), name, thumb, cat, color, badge, tiers, star:0, sold:0 });
+    toast("Đã thêm: " + name);
+  }
+  saveProducts(PRODUCTS);
+  cancelProductEdit();
+  renderAll();
+  refreshAdminPanel();
+}
+function deleteProduct(id){
+  if(!isAdmin()) return;
+  const p = getProductById(id);
+  if(!p) return;
+  if(!confirm("Xoá sản phẩm: " + p.name + "?")) return;
+  saveProducts(loadProducts().filter(x => x.id !== id));
+  toast("Đã xoá: " + p.name);
+  renderAll();
+  refreshAdminPanel();
+}
+
+// ============ ADMIN APPROVE ============
+function approveTopup(id){
+  if(!isAdmin()) return;
+  const pending = loadPending();
+  const req = pending.find(p => p.id === id);
+  if(!req) return toast("Không tìm thấy yêu cầu", true);
+  const rec = getUserRecordByKey(req.userKey);
+  if(!rec) return toast("User không tồn tại", true);
+  updateUserRecordByKey(req.userKey, { balance: (rec.balance || 0) + req.amount });
+  savePending(pending.filter(p => p.id !== id));
+  const orders = loadOrders();
+  orders.push({ id:req.id+"_OK", user:req.username, amount:req.amount, type:"topup", at:Date.now() });
+  saveOrders(orders);
+  toast("Đã duyệt " + fmt(req.amount) + " cho " + req.username);
+  refreshAdminPanel();
+  updateAuthUI();
+}
+function rejectTopup(id){
+  if(!isAdmin()) return;
+  const pending = loadPending();
+  const req = pending.find(p => p.id === id);
+  if(!req) return;
+  savePending(pending.filter(p => p.id !== id));
+  const orders = loadOrders();
+  orders.push({ id:req.id+"_X", user:req.username, amount:req.amount, type:"topup_rejected", at:Date.now() });
+  saveOrders(orders);
+  toast("Đã từ chối yêu cầu " + req.id);
+  refreshAdminPanel();
+  updateAuthUI();
+}
+function approvePurchase(orderId){
+  if(!isAdmin()) return;
+  const orders = loadOrders();
+  const idx = orders.findIndex(o => o.id === orderId && (o.type === "purchase_pending" || o.type === "roblox_pending"));
+  if(idx < 0) return toast("Không tìm thấy đơn hàng", true);
+  const order = orders[idx];
+
+  if(order.type === "roblox_pending"){
+    orders[idx].type = "roblox";
+    orders[idx].status = "delivered";
+    orders[idx].deliveredAt = Date.now();
+    saveOrders(orders);
+    toast("Đã xác nhận đơn Roblox cho " + order.user);
+    refreshAdminPanel();
+    updateAdminBadge();
+    return;
+  }
+
+  const list = loadProducts();
+  const pIdx = list.findIndex(p => p.id === order.productId);
+  if(pIdx < 0) return toast("Không tìm thấy sản phẩm", true);
+  const product = list[pIdx];
+  const tIdx = (product.tiers || []).findIndex(t => t.id === order.tierId);
+  if(tIdx < 0) return toast("Không tìm thấy gói", true);
+  const tier = product.tiers[tIdx];
+
+  let key = null;
+  if(tier.keys && tier.keys.length){
+    key = tier.keys.shift();
+    tier.stock = Math.max(0, (tier.stock || 0) - 1);
+    saveProducts(list);
+  } else {
+    const manual = prompt("Gói này không có key trong kho. Nhập key thủ công:", "");
+    if(manual === null) return;
+    key = manual.trim() || ("AUTO-" + Math.random().toString(36).slice(2,10).toUpperCase());
+  }
+
+  orders[idx].type = "purchase";
+  orders[idx].status = "delivered";
+  orders[idx].key = key;
+  orders[idx].keySeen = false;
+  saveOrders(orders);
+  toast("Đã cấp key cho " + order.user + " — " + order.item + " / " + order.tierLabel);
+  refreshAdminPanel();
+  updateAdminBadge();
+}
+function rejectPurchase(orderId){
+  if(!isAdmin()) return;
+  const orders = loadOrders();
+  const idx = orders.findIndex(o => o.id === orderId && (o.type === "purchase_pending" || o.type === "roblox_pending"));
+  if(idx < 0) return;
+  const order = orders[idx];
+  if(!confirm("Từ chối đơn của " + order.user + "? Tiền sẽ hoàn lại.")) return;
+  const rec = getUserRecordByKey(order.userKey);
+  if(rec) updateUserRecordByKey(order.userKey, { balance: (rec.balance || 0) + order.amount });
+
+  if(order.type === "purchase_pending"){
+    const list = loadProducts();
+    const pIdx = list.findIndex(p => p.id === order.productId);
+    if(pIdx >= 0){
+      const tIdx = (list[pIdx].tiers || []).findIndex(t => t.id === order.tierId);
+      if(tIdx >= 0) list[pIdx].tiers[tIdx].stock = (list[pIdx].tiers[tIdx].stock || 0) + 1;
+      saveProducts(list);
+    }
+    orders[idx].type = "purchase_rejected";
+  } else {
+    orders[idx].type = "roblox_rejected";
+  }
+  orders[idx].status = "rejected";
+  saveOrders(orders);
+  toast("Đã từ chối đơn " + order.id + " và hoàn tiền");
+  refreshAdminPanel();
+  updateAdminBadge();
+  renderAll();
+}
+
+// ============ REFRESH ADMIN ============
+function refreshAdminPanel(){
+  if(!isAdmin()){ toast("Bạn không phải admin", true); go("home"); return; }
+
+  const announces = [...loadAnnouncements()].reverse();
+  const annList = document.getElementById("adminAnnounceList");
+  if(!announces.length){
+    annList.innerHTML = `<div class="form-card" style="margin-top:0;text-align:center"><div style="font-size:34px;margin-bottom:6px">📭</div><div style="color:#7a869e;font-size:12px">Chưa có thông báo nào</div></div>`;
+  } else {
+    annList.innerHTML = announces.map(a => `
+      <div class="admin-row">
+        <div class="arow"><span>Nội dung</span><b>${escapeHtml(a.text).slice(0,80)}</b></div>
+        <div class="arow"><span>Lúc</span><span>${new Date(a.at).toLocaleString('vi-VN')}</span></div>
+        <div class="admin-actions"><button class="reject" onclick="deleteAnnouncement('${a.id}')">🗑️ XOÁ</button></div>
+      </div>`).join("");
+  }
+
+  const pending = loadPending();
+  const plist = document.getElementById("adminPendingList");
+  if(!pending.length){
+    plist.innerHTML = `<div class="form-card" style="margin-top:0;text-align:center"><div style="font-size:40px;margin-bottom:8px">✅</div><div style="color:#7a869e;font-size:13px">Không có yêu cầu nạp</div></div>`;
+  } else {
+    plist.innerHTML = pending.map(p => {
+      const content = p.content || (p.username + " " + p.amount);
+      return `
+        <div class="admin-row">
+          <div class="arow"><span>Mã</span><b>${p.id}</b></div>
+          <div class="arow"><span>User</span><b>${escapeHtml(p.username)}</b></div>
+          <div class="arow"><span>Số tiền</span><b class="amount">${fmt(p.amount)}</b></div>
+          <div class="arow"><span>Nội dung CK</span><b style="color:#4ade80;cursor:pointer" onclick="copyToClipboard('${escapeHtml(content)}')">${escapeHtml(content)} 📋</b></div>
+          <div class="arow"><span>Lúc</span><span>${new Date(p.at).toLocaleString('vi-VN')}</span></div>
+          <div class="admin-actions">
+            <button class="approve" onclick="approveTopup('${p.id}')">✅ DUYỆT</button>
+            <button class="reject" onclick="rejectTopup('${p.id}')">❌ TỪ CHỐI</button>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  const orders = loadOrders();
+  const pp = orders.filter(o => o.type === "purchase_pending" || o.type === "roblox_pending");
+  const ppl = document.getElementById("adminPurchasePendingList");
+  if(!pp.length){
+    ppl.innerHTML = `<div class="form-card" style="margin-top:0;text-align:center"><div style="font-size:40px;margin-bottom:8px">✅</div><div style="color:#7a869e;font-size:13px">Không có đơn mua chờ xử lý</div></div>`;
+  } else {
+    ppl.innerHTML = pp.map(o => {
+      const isRoblox = o.type === "roblox_pending";
+      let keyCount = 0;
+      if(!isRoblox){
+        const product = getProductById(o.productId);
+        if(product){
+          const tier = (product.tiers || []).find(t => t.id === o.tierId);
+          if(tier) keyCount = (tier.keys || []).length;
+        }
+      }
+      const robloxInfo = isRoblox ? `
+        <div class="arow"><span>🎮 Acc Roblox</span><b style="color:#4ade80;cursor:pointer" onclick="copyToClipboard('${escapeHtml(o.robloxUser||'')}')">${escapeHtml(o.robloxUser||'')} 📋</b></div>
+        <div class="arow"><span>🔐 Pass Roblox</span><b style="color:#4ade80;cursor:pointer" onclick="copyToClipboard('${escapeHtml(o.robloxPass||'')}')">${escapeHtml(o.robloxPass||'')} 📋</b></div>
+      ` : "";
+      const keyInfo = isRoblox ? "" : `<div class="arow"><span>Key còn trong gói</span><b style="color:${keyCount > 0 ? '#4ade80':'#ff4d5e'}">${keyCount} key</b></div>`;
+      return `
+        <div class="admin-row">
+          <div class="arow"><span>Đơn</span><b>${o.id} ${isRoblox ? '🎮' : ''}</b></div>
+          <div class="arow"><span>User</span><b>${escapeHtml(o.user)}</b></div>
+          <div class="arow"><span>Sản phẩm</span><b>${escapeHtml(o.item || '')} — ${escapeHtml(o.tierLabel || '')}</b></div>
+          <div class="arow"><span>Giá</span><b class="amount">${fmt(o.amount)}</b></div>
+          ${robloxInfo}
+          ${keyInfo}
+          <div class="admin-actions">
+            <button class="key" onclick="approvePurchase('${o.id}')">${isRoblox ? '✅ TREO XONG' : '🔑 CẤP KEY'}</button>
+            <button class="reject" onclick="rejectPurchase('${o.id}')">❌ TỪ CHỐI</button>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  const chatList = document.getElementById("adminChatList");
+  if(adminChatUser){ openAdminChat(adminChatUser); return; }
+  const chats = loadChats();
+  const ck = Object.keys(chats).filter(k => chats[k].messages && chats[k].messages.length);
+  if(!ck.length){
+    chatList.innerHTML = `<div class="form-card" style="margin-top:0;text-align:center"><div style="font-size:40px;margin-bottom:8px">💬</div><div style="color:#7a869e;font-size:13px">Chưa có tin nhắn nào</div></div>`;
+  } else {
+    ck.sort((a,b) => (chats[b].lastAt||0) - (chats[a].lastAt||0));
+    chatList.innerHTML = ck.map(k => {
+      const c = chats[k];
+      const last = c.messages[c.messages.length-1];
+      const un = c.adminUnread || 0;
+      return `
+        <div class="admin-chat-item" onclick="openAdminChat('${k}')">
+          <div class="aci-avatar">${(c.user || "?").charAt(0).toUpperCase()}</div>
+          <div class="aci-info">
+            <div class="aci-name">${escapeHtml(c.user || k)}${un ? `<span class="unread-tag">${un} mới</span>` : ""}</div>
+            <div class="aci-preview">${last.from === 'admin' ? 'Bạn: ' : ''}${escapeHtml(last.text).slice(0,40)}</div>
+          </div>
+          <div class="aci-time">${new Date(c.lastAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</div>
+        </div>`;
+    }).join("");
+  }
+
+  const PRODUCTS = loadProducts();
+  const prodList = document.getElementById("adminProductsList");
+  if(!PRODUCTS.length){
+    prodList.innerHTML = `<div style="text-align:center;color:#7a869e;padding:20px">Chưa có sản phẩm</div>`;
+  } else {
+    prodList.innerHTML = PRODUCTS.map(p => {
+      const isRoblox = p.cat === "roblox";
+      const tierList = (p.tiers || []).map(t => `
+        <div class="arow" style="font-size:11px;padding:4px 0;border-top:1px dashed var(--line);margin-top:4px">
+          <span>${escapeHtml(t.label)} — ${escapeHtml(t.priceText)}</span>
+          <b style="color:${isRoblox || t.stock > 0 ? '#4ade80' : '#ff4d5e'}">${isRoblox ? '🎮 Roblox' : (t.stock || 0) + ' key còn'}</b>
+        </div>`).join("");
+      return `
+        <div class="admin-row">
+          <div class="arow"><span>${escapeHtml(p.name)} ${isRoblox ? '🎮' : ''}</span><b style="color:#fbbf24">${fmt(minPrice(p))}+</b></div>
+          <div class="arow"><span>Danh mục: ${escapeHtml(p.cat)}</span><span>${escapeHtml(p.color)}</span></div>
+          ${tierList}
+          <div class="admin-actions">
+            <button class="edit" onclick="editProduct(${p.id})">✏️ SỬA / THÊM KEY</button>
+            <button class="del" onclick="deleteProduct(${p.id})">🗑️ XOÁ</button>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  const users = loadUsers();
+  const userArr = Object.values(users).sort((a,b) => (b.created||0) - (a.created||0));
+  const totalRev = loadOrders().filter(o => o.type === "purchase" || o.type === "roblox").reduce((s,o) => s + (o.amount || 0), 0);
+  document.getElementById("adminRevenue").textContent = fmt(totalRev);
+  document.getElementById("adminUsersList").innerHTML = userArr.map(u => `
+    <div class="admin-row">
+      <div class="arow"><span>${u.role === "admin" ? "👑" : "👤"} ${escapeHtml(u.username)}</span><b class="amount">${fmt(u.balance || 0)}</b></div>
+      <div class="arow"><span>Vai trò: ${u.role || "user"}</span><span>${new Date(u.created||0).toLocaleDateString('vi-VN')}</span></div>
+      ${u.rating ? `<div class="arow"><span>Đánh giá</span><b style="color:#fbbf24">${"★".repeat(u.rating)}</b></div>` : ""}
+    </div>`).join("");
+
+  updateAdminBadge();
+}
+
+// ============ RATING EVENTS ============
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("#rateStars .rs").forEach(el => {
+    el.addEventListener("click", () => {
+      const me = getSession();
+      if(!me){ toast("Vui lòng đăng nhập để đánh giá", true); go("info"); return; }
+      const star = Number(el.dataset.v);
+      const old = getUserRecord()?.rating || 0;
+      if(old === star){ toast("Bạn đã đánh giá " + star + " sao rồi"); return; }
+      if(old) changeRating(old, star); else addRating(star);
+      updateUserRecord({ rating: star });
+      toast("Cảm ơn bạn đã đánh giá " + star + "★!");
+      renderRatingBox();
+    });
+    el.addEventListener("mouseenter", () => {
+      const v = Number(el.dataset.v);
+      document.querySelectorAll("#rateStars .rs").forEach(x => x.classList.toggle("on", Number(x.dataset.v) <= v));
+    });
+    el.addEventListener("mouseleave", () => renderRatingBox());
+  });
+  const ci = document.getElementById("chatInput");
+  if(ci) ci.addEventListener("keydown", e => { if(e.key === "Enter") sendChat(); });
+});
+
+// ============ BOOT ============
+(async () => {
+  await seedAdmin();
+  renderAll();
+  updateAuthUI();
+  if(getSession()) showLogged(); else showLogin();
+  refreshTopupView();
+  updateAdminBadge();
+  updateChatBadge();
+
+  setInterval(() => {
+    updateChatBadge();
+    if(isAdmin()) updateAdminBadge();
+    if(chatOpen) renderChatBody();
+    if(isAdmin() && adminChatUser) renderAdminChatBody();
+    checkNewAnnouncement();
+    checkUnseenKeys();
+  }, 2000);
+
+  console.log("%c🔐 ADMIN: admin / admin123", "color:#fbbf24;font-size:14px;font-weight:bold");
+})();
+</script>
+</body>
+</html>
